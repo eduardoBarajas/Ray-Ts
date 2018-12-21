@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/inicio"
+            android:icon="@drawable/ic_launcher_background"
+            android:title="Inicio(Noticias)"/>
+        <item
+            android:id="@+id/perfil"
+            android:icon="@drawable/ic_launcher_background"
+            android:title="Perfil"/>
+        <item
+            android:id="@+id/mapa"
+            android:icon="@drawable/ic_launcher_background"
+            android:title="Mapa"/>
+        <item
+            android:id="@+id/califica"
+            android:icon="@drawable/ic_launcher_background"
+            android:title="Califica a tu profesor"/>
+    </group>
+
+    <item
+        android:id="@+id/navigation_subheader"
+        android:title="Mas Opciones">
+        <menu>
+            <item
+                android:id="@+id/cerrar_sesion"
+                android:icon="@drawable/ic_launcher_background"
+                android:title="Cerrar Sesion"/>
+            <item
+                android:id="@+id/calificanos"
+                android:icon="@drawable/ic_launcher_background"
+                android:title="Calificanos"/>
+            <item
+                android:id="@+id/acerca_nosotros"
+                android:icon="@drawable/ic_launcher_background"
+                android:title="Acerca UABCMovil"/>
+        </menu>
+    </item>
+</menu>

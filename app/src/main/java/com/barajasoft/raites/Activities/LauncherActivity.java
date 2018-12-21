@@ -15,7 +15,7 @@ public class LauncherActivity extends AppCompatActivity {
         Runnable timerCode = new Runnable() {
             @Override
             public void run() {
-                startActivity(new Intent(getApplicationContext(),MainMenuActivity.class));
+                startActivity(new Intent(getApplicationContext(),LoginActivity.class));
                 finish();
             }
         };

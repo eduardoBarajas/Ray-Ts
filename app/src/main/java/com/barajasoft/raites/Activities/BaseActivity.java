@@ -11,6 +11,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 
 import com.barajasoft.raites.Adapters.ViewPagerAdapter;
 import com.barajasoft.raites.Fragments.AvaibleRidesFragment;
@@ -27,28 +28,30 @@ public class BaseActivity extends AppCompatActivity {
     private BottomNavigationView bottomNavigation;
     private ViewPager viewPager;
     private MenuItem prevMenuItem = null;
+    private LinearLayout contentLayout;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.base_activity);
+        contentLayout = findViewById(R.id.contentLinearLayout);
         viewPager = findViewById(R.id.viewPager);
         bottomNavigation = findViewById(R.id.navigation);
+        drawerLayout = findViewById(R.id.drawer);
+        drawer = findViewById(R.id.drawer_layout);
+
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        getSupportActionBar().setHomeAsUpIndicator(R.drawable.menu_icon);
-
-        initDrawer();
-        initViewPager();
-
     }
 
-    private void initViewPager() {
+    protected void initViewPager(String activity) {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
-        adapter.addFragment(new MapFragment());
-        adapter.addFragment(new MyRideFragment());
-        adapter.addFragment(new AvaibleRidesFragment());
+        switch (activity){
+            case "MainMenu":
+                adapter.addFragment(new MapFragment());
+                adapter.addFragment(new MyRideFragment());
+                adapter.addFragment(new AvaibleRidesFragment());
+                break;
+        }
         viewPager.setAdapter(adapter);
         /*
             Se agrego un on page listener, para que se pudiera hacer el cambio de los fragments segun la opcion
@@ -71,9 +74,9 @@ public class BaseActivity extends AppCompatActivity {
         });
     }
 
-    private void initDrawer() {
-        drawerLayout = findViewById(R.id.drawer);
-        drawer = findViewById(R.id.drawer_layout);
+    protected void initDrawer() {
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setHomeAsUpIndicator(R.drawable.menu_icon);
         navItems =  drawer.findViewById(R.id.navItems);
     }
 
@@ -110,6 +113,14 @@ public class BaseActivity extends AppCompatActivity {
         bottomNavigation.setVisibility(View.GONE);
     }
 
+    protected void disableDrawer(){
+        drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+    }
+
+    protected void disableViewPager(){
+        viewPager.setVisibility(View.GONE);
+    }
+
     protected void setBottomMenu(String options){
         bottomNavigation.getMenu().clear();
         switch (options){
@@ -135,5 +146,9 @@ public class BaseActivity extends AppCompatActivity {
             }
             return false;
         });
+    }
+
+    protected void addContent(View content){
+        contentLayout.addView(content);
     }
 }

@@ -31,16 +31,21 @@
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
             </android.support.design.widget.AppBarLayout>
+            <android.support.v4.view.ViewPager
+                android:id="@+id/viewPager"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:layout_behavior="@string/appbar_scrolling_view_behavior" />
         </LinearLayout>
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@color/colorAccent"
-            app:itemIconTint="@color/colorPrimary"
-            app:itemTextColor="@color/colorPrimaryDark"
-            app:menu="@menu/default_bottom_menu" />
+            android:background="@color/difumedPrimary"
+            app:itemIconTint="@color/coolGray"
+            app:itemTextColor="@color/coolGray"
+            app:menu="@menu/main_menu_bottom_menu" />
     </android.support.design.widget.CoordinatorLayout>
 
     <include

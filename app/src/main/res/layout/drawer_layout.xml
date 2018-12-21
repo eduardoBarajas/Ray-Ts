@@ -73,7 +73,6 @@
         android:layout_height="wrap_content"
         android:layout_alignParentEnd="true"
         android:layout_below="@id/LinearLayout1"
-        android:visibility="gone"
-        app:menu="@menu/default_menu">
+        app:menu="@menu/main_menu_menu">
     </android.support.design.widget.NavigationView>
 </android.support.design.widget.NavigationView>

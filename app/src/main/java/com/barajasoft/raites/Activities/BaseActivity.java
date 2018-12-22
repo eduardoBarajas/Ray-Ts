@@ -19,7 +19,6 @@ import android.widget.Toast;
 import com.barajasoft.raites.Adapters.ViewPagerAdapter;
 import com.barajasoft.raites.Fragments.BuscarViajesFragment;
 import com.barajasoft.raites.Fragments.ViajesActivosFragment;
-import com.barajasoft.raites.Fragments.PublicarViajeFragment;
 import com.barajasoft.raites.Listeners.OnPageChangeListener;
 import com.barajasoft.raites.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
@@ -68,7 +67,6 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                 ViajesActivosFragment f = new ViajesActivosFragment();
                 f.setListener(onPageChangeListener);
                 adapter.addFragment(f);
-                adapter.addFragment(new PublicarViajeFragment());
                 adapter.addFragment(new BuscarViajesFragment());
                 break;
         }
@@ -121,12 +119,8 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
 
     protected void setNavViewMenu(String options){
         navItems.getMenu().clear();
-        switch (options){
-            case "MainMenu":
-                navItems.inflateMenu(R.menu.main_menu_menu);
-                setDrawerOptionsListener(navItems,"inicio");
-                break;
-        }
+        navItems.inflateMenu(R.menu.main_menu_menu);
+        setDrawerOptionsListener(navItems,options);
         navItems.bringToFront();
     }
 
@@ -145,7 +139,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                         break;
                     case R.id.publicar_viaje:
                         if(!current.equals("publicar_viaje")) {
-                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            startActivity(new Intent(BaseActivity.this, PublicarViajeActivity.class));
                             finish();
                         }else{
                             Toast.makeText(getApplicationContext(),"Ya estas publicando un viaje",Toast.LENGTH_SHORT).show();
@@ -153,7 +147,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                         break;
                     case R.id.perfil:
                         if(!current.equals("perfil")) {
-                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            startActivity(new Intent(BaseActivity.this, ProfileActivity.class));
                             finish();
                         }else{
                             Toast.makeText(getApplicationContext(),"Ya estas en el perfil",Toast.LENGTH_SHORT).show();
@@ -161,7 +155,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                         break;
                     case R.id.miVehiculo:
                         if(!current.equals("miVehiculo")) {
-                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            startActivity(new Intent(BaseActivity.this, MiVehiculoActivity.class));
                             finish();
                         }else{
                             Toast.makeText(getApplicationContext(),"Ya estas en tu vehiculo",Toast.LENGTH_SHORT).show();
@@ -169,7 +163,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                         break;
                     case R.id.acerca_nosotros:
                         if(!current.equals("acerca_nosotros")) {
-                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            startActivity(new Intent(BaseActivity.this, AboutActivity.class));
                             finish();
                         }else{
                             Toast.makeText(getApplicationContext(),"Ya estas en acerca de la app",Toast.LENGTH_SHORT).show();
@@ -185,7 +179,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                         break;
                     case R.id.contactanos:
                         if(!current.equals("contactanos")) {
-                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            startActivity(new Intent(BaseActivity.this, ContactActivity.class));
                             finish();
                         }else{
                             Toast.makeText(getApplicationContext(),"Ya estas en contacto",Toast.LENGTH_SHORT).show();
@@ -193,7 +187,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                         break;
                     case R.id.ayuda:
                         if(!current.equals("ayuda")) {
-                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            startActivity(new Intent(BaseActivity.this, HelpActivity.class));
                             finish();
                         }else{
                             Toast.makeText(getApplicationContext(),"Ya estas en ayuda",Toast.LENGTH_SHORT).show();

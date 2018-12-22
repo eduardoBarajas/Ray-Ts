@@ -12,7 +12,7 @@ public class MainMenuActivity extends BaseActivity {
         //disableBottomMenu();
         setBottomMenu("MainMenu");
         initDrawer();
-        setNavViewMenu("MainMenu");
+        setNavViewMenu("inicio");
         initViewPager("MainMenu");
     }
 }

@@ -6,7 +6,7 @@ import android.view.View;
 
 import com.barajasoft.raites.R;
 
-public class ProfileActivity extends BaseActivity {
+public class MiVehiculoActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -14,8 +14,8 @@ public class ProfileActivity extends BaseActivity {
         disableBottomMenu();
         disableViewPager();
         initDrawer();
-        setNavViewMenu("perfil");
-        View layout = LayoutInflater.from(this).inflate(R.layout.profile_activity,null);
+        setNavViewMenu("miVehiculo");
+        View layout = LayoutInflater.from(this).inflate(R.layout.mi_vehiculo_activity,null);
         addContent(layout);
     }
 }

@@ -6,7 +6,7 @@ import android.view.View;
 
 import com.barajasoft.raites.R;
 
-public class ProfileActivity extends BaseActivity {
+public class ContactActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -14,8 +14,8 @@ public class ProfileActivity extends BaseActivity {
         disableBottomMenu();
         disableViewPager();
         initDrawer();
-        setNavViewMenu("perfil");
-        View layout = LayoutInflater.from(this).inflate(R.layout.profile_activity,null);
+        setNavViewMenu("contactanos");
+        View layout = LayoutInflater.from(this).inflate(R.layout.contact_activity,null);
         addContent(layout);
     }
 }

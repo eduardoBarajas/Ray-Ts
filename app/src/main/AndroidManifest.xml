@@ -31,6 +31,48 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activities.ProfileActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.PROFILE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activities.PublicarViajeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.PUBLICAR_VIAJE" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activities.MiVehiculoActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MY_CAR" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activities.HelpActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.AYUDA" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activities.ContactActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.CONTACTO" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activities.AboutActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.ACERCA_NOSOTROS" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="preloaded_fonts"

@@ -14,14 +14,20 @@ import android.view.View;
 import android.widget.LinearLayout;
 
 import com.barajasoft.raites.Adapters.ViewPagerAdapter;
-import com.barajasoft.raites.Fragments.AvaibleRidesFragment;
-import com.barajasoft.raites.Fragments.MapFragment;
-import com.barajasoft.raites.Fragments.MyRideFragment;
+import com.barajasoft.raites.Fragments.BuscarViajesFragment;
+import com.barajasoft.raites.Fragments.ViajesActivosFragment;
+import com.barajasoft.raites.Fragments.PublicarViajeFragment;
 import com.barajasoft.raites.R;
+import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import com.google.android.gms.auth.api.signin.GoogleSignInClient;
+import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.firebase.auth.FirebaseAuth;
 
 import static android.view.KeyEvent.KEYCODE_BACK;
 
 public class BaseActivity extends AppCompatActivity {
+    private GoogleSignInClient googleSignInClient;
+    private FirebaseAuth auth;
     private DrawerLayout drawerLayout;
     private NavigationView drawer;
     private NavigationView navItems;
@@ -33,6 +39,12 @@ public class BaseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.base_activity);
+        auth = FirebaseAuth.getInstance();
+        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                .requestIdToken(getString(R.string.clientOath))
+                .requestEmail()
+                .build();
+        googleSignInClient = GoogleSignIn.getClient(this,gso);
         contentLayout = findViewById(R.id.contentLinearLayout);
         viewPager = findViewById(R.id.viewPager);
         bottomNavigation = findViewById(R.id.navigation);
@@ -47,9 +59,9 @@ public class BaseActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         switch (activity){
             case "MainMenu":
-                adapter.addFragment(new MapFragment());
-                adapter.addFragment(new MyRideFragment());
-                adapter.addFragment(new AvaibleRidesFragment());
+                adapter.addFragment(new ViajesActivosFragment());
+                adapter.addFragment(new PublicarViajeFragment());
+                adapter.addFragment(new BuscarViajesFragment());
                 break;
         }
         viewPager.setAdapter(adapter);
@@ -150,5 +162,11 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void addContent(View content){
         contentLayout.addView(content);
+    }
+
+    protected boolean signOut(){
+        auth.signOut();
+        googleSignInClient.signOut();
+        return true;
     }
 }

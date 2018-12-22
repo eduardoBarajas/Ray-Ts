@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.barajasoft.raites.R;
 
-public class MapFragment extends BaseFragment {
+public class PublicarViajeFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,7 +19,7 @@ public class MapFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        Toast.makeText(getContext(),"SOS",Toast.LENGTH_SHORT).show();
-        return inflater.inflate(R.layout.map_fragment,container,false);
+        Toast.makeText(getContext(),"SIS",Toast.LENGTH_SHORT).show();
+        return inflater.inflate(R.layout.publicar_viaje_fragment,container,false);
     }
 }

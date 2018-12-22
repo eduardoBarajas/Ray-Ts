@@ -10,7 +10,7 @@ import android.widget.Toast;
 
 import com.barajasoft.raites.R;
 
-public class AvaibleRidesFragment extends BaseFragment {
+public class BuscarViajesFragment extends BaseFragment {
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

@@ -1,5 +1,7 @@
 package com.barajasoft.raites.Activities;
 
+import android.content.Intent;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -12,11 +14,13 @@ import android.view.KeyEvent;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.barajasoft.raites.Adapters.ViewPagerAdapter;
 import com.barajasoft.raites.Fragments.BuscarViajesFragment;
 import com.barajasoft.raites.Fragments.ViajesActivosFragment;
 import com.barajasoft.raites.Fragments.PublicarViajeFragment;
+import com.barajasoft.raites.Listeners.OnPageChangeListener;
 import com.barajasoft.raites.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
@@ -25,7 +29,7 @@ import com.google.firebase.auth.FirebaseAuth;
 
 import static android.view.KeyEvent.KEYCODE_BACK;
 
-public class BaseActivity extends AppCompatActivity {
+public class BaseActivity extends AppCompatActivity implements OnPageChangeListener {
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth;
     private DrawerLayout drawerLayout;
@@ -35,9 +39,11 @@ public class BaseActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private MenuItem prevMenuItem = null;
     private LinearLayout contentLayout;
+    private OnPageChangeListener onPageChangeListener;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        onPageChangeListener = this;
         setContentView(R.layout.base_activity);
         auth = FirebaseAuth.getInstance();
         GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -59,7 +65,9 @@ public class BaseActivity extends AppCompatActivity {
         ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
         switch (activity){
             case "MainMenu":
-                adapter.addFragment(new ViajesActivosFragment());
+                ViajesActivosFragment f = new ViajesActivosFragment();
+                f.setListener(onPageChangeListener);
+                adapter.addFragment(f);
                 adapter.addFragment(new PublicarViajeFragment());
                 adapter.addFragment(new BuscarViajesFragment());
                 break;
@@ -116,9 +124,85 @@ public class BaseActivity extends AppCompatActivity {
         switch (options){
             case "MainMenu":
                 navItems.inflateMenu(R.menu.main_menu_menu);
+                setDrawerOptionsListener(navItems,"inicio");
                 break;
         }
         navItems.bringToFront();
+    }
+
+    private void setDrawerOptionsListener(NavigationView nav, String current) {
+        nav.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+            @Override
+            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
+                switch (item.getItemId()){
+                    case R.id.inicio:
+                        if(!current.equals("inicio")) {
+                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            finish();
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Ya estas en el inicio",Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case R.id.publicar_viaje:
+                        if(!current.equals("publicar_viaje")) {
+                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            finish();
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Ya estas publicando un viaje",Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case R.id.perfil:
+                        if(!current.equals("perfil")) {
+                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            finish();
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Ya estas en el perfil",Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case R.id.miVehiculo:
+                        if(!current.equals("miVehiculo")) {
+                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            finish();
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Ya estas en tu vehiculo",Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case R.id.acerca_nosotros:
+                        if(!current.equals("acerca_nosotros")) {
+                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            finish();
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Ya estas en acerca de la app",Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case R.id.cerrar_sesion:
+                        if(!current.equals("cerrar_sesion")) {
+                            if(signOut()) {
+                                startActivity(new Intent(BaseActivity.this, LoginActivity.class));
+                                finish();
+                            }
+                        }
+                        break;
+                    case R.id.contactanos:
+                        if(!current.equals("contactanos")) {
+                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            finish();
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Ya estas en contacto",Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                    case R.id.ayuda:
+                        if(!current.equals("ayuda")) {
+                            startActivity(new Intent(BaseActivity.this, MainMenuActivity.class));
+                            finish();
+                        }else{
+                            Toast.makeText(getApplicationContext(),"Ya estas en ayuda",Toast.LENGTH_SHORT).show();
+                        }
+                        break;
+                }
+                return false;
+            }
+        });
     }
 
     protected void disableBottomMenu(){
@@ -152,9 +236,6 @@ public class BaseActivity extends AppCompatActivity {
                 case R.id.option2:
                     viewPager.setCurrentItem(1);
                     break;
-                case R.id.option3:
-                    viewPager.setCurrentItem(2);
-                    break;
             }
             return false;
         });
@@ -168,5 +249,12 @@ public class BaseActivity extends AppCompatActivity {
         auth.signOut();
         googleSignInClient.signOut();
         return true;
+    }
+
+    @Override
+    public void pageChanged(int position) {
+        viewPager.setCurrentItem(position);
+        bottomNavigation.getMenu().getItem(position).setChecked(true);
+        prevMenuItem = bottomNavigation.getMenu().getItem(position);
     }
 }

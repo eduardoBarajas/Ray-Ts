@@ -14,15 +14,5 @@ public class MainMenuActivity extends BaseActivity {
         initDrawer();
         setNavViewMenu("MainMenu");
         initViewPager("MainMenu");
-        Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                if(signOut()){
-                    startActivity(new Intent(getApplicationContext(),LoginActivity.class));
-                    finish();
-                }
-            }
-        },8000);
     }
 }

@@ -7,10 +7,6 @@
             android:title="Viajes Activos"/>
         <item
             android:id="@+id/option2"
-            android:icon="@drawable/viaje_seleccionado_icon"
-            android:title="Publicar Viaje"/>
-        <item
-            android:id="@+id/option3"
             android:icon="@drawable/viajes_programados_icon"
             android:title="Buscar Viajes"/>
     </group>

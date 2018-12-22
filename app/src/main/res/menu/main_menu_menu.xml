@@ -3,38 +3,41 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/inicio"
-            android:icon="@drawable/ic_launcher_background"
-            android:title="Inicio(Noticias)"/>
+            android:icon="@drawable/home_icon"
+            android:title="Inicio"/>
         <item
             android:id="@+id/perfil"
-            android:icon="@drawable/ic_launcher_background"
+            android:icon="@drawable/perfil_icon"
             android:title="Perfil"/>
         <item
-            android:id="@+id/mapa"
-            android:icon="@drawable/ic_launcher_background"
-            android:title="Mapa"/>
+            android:id="@+id/publicar_viaje"
+            android:icon="@drawable/viaje_seleccionado_icon"
+            android:title="Publicar viaje" />
         <item
-            android:id="@+id/califica"
-            android:icon="@drawable/ic_launcher_background"
-            android:title="Califica a tu profesor"/>
+            android:id="@+id/miVehiculo"
+            android:icon="@drawable/mi_auto_icon"
+            android:title="Mi vehiculo"/>
     </group>
-
     <item
         android:id="@+id/navigation_subheader"
         android:title="Mas Opciones">
         <menu>
             <item
                 android:id="@+id/cerrar_sesion"
-                android:icon="@drawable/ic_launcher_background"
+                android:icon="@drawable/cerrar_sesion_icon"
                 android:title="Cerrar Sesion"/>
             <item
-                android:id="@+id/calificanos"
+                android:id="@+id/ayuda"
                 android:icon="@drawable/ic_launcher_background"
-                android:title="Calificanos"/>
+                android:title="Ayuda"/>
+            <item
+                android:id="@+id/contactanos"
+                android:icon="@drawable/contacto_icon"
+                android:title="Contactanos"/>
             <item
                 android:id="@+id/acerca_nosotros"
-                android:icon="@drawable/ic_launcher_background"
-                android:title="Acerca UABCMovil"/>
+                android:icon="@drawable/nosotros_icon"
+                android:title="Acerca Nosotros"/>
         </menu>
     </item>
 </menu>

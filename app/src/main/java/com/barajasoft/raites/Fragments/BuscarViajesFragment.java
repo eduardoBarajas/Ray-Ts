@@ -20,6 +20,6 @@ public class BuscarViajesFragment extends BaseFragment {
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         Toast.makeText(getContext(),"Estas seguro que no es una pieza de pollo?",Toast.LENGTH_SHORT).show();
-        return inflater.inflate(R.layout.avaible_rides_fragment,container,false);
+        return inflater.inflate(R.layout.buscar_viajes_fragment,container,false);
     }
 }

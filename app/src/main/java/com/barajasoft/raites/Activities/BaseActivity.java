@@ -1,7 +1,9 @@
 package com.barajasoft.raites.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Color;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -18,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.barajasoft.raites.Adapters.ViewPagerAdapter;
+import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.Fragments.BuscarViajesFragment;
 import com.barajasoft.raites.Fragments.ViajesActivosFragment;
 import com.barajasoft.raites.Listeners.OnPageChangeListener;
@@ -42,6 +45,8 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
     private LinearLayout contentLayout;
     private OnPageChangeListener onPageChangeListener;
     private Toolbar toolbar;
+    private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -61,6 +66,23 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
 
         toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
+        editor = pref.edit();
+    }
+
+    protected void setUserSesionData(User sesion){
+        editor.putString("correo",sesion.getCorreo());
+        editor.putInt("edad",sesion.getEdad());
+        editor.putString("linkPerfil",sesion.getImagenPerfil());
+        editor.putString("key",sesion.getKey());
+        editor.putString("nombre",sesion.getNombre());
+        editor.putFloat("rating",sesion.getRating());
+        editor.putString("sexo",sesion.getSexo());
+        editor.putString("telefono",sesion.getTelefono());
+        editor.putBoolean("validadoConductor",sesion.isValidadoConductor());
+        editor.putBoolean("validadoPasajero",sesion.isValidadoPasajero());
+        editor.commit();
     }
 
     protected void initViewPager(String activity) {
@@ -245,6 +267,8 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
     protected boolean signOut(){
         auth.signOut();
         googleSignInClient.signOut();
+        editor.clear();
+        editor.commit();
         return true;
     }
 

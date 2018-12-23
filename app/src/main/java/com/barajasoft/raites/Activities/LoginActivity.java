@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.util.Log;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.R;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
@@ -26,11 +28,19 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.database.ChildEventListener;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class LoginActivity extends BaseActivity {
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth;
     private final int SIGN_IN = 751;
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference referencia = database.getReference("Usuarios");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,24 +65,11 @@ public class LoginActivity extends BaseActivity {
         btnCrearCuenta.setOnClickListener(e->{
             startActivity(new Intent(LoginActivity.this,RegisterUserActivity.class));
         });
-        if(auth.getCurrentUser()==null){
-            googleSignInClient.signOut();
-        }else{
-            btnInicioSesionGoogle.setText("Continuar como " + auth.getCurrentUser().getDisplayName());
-        }
 
         btnInicioSesionGoogle.setOnClickListener(e->{
-            if(auth.getCurrentUser()!=null){
-                Toast.makeText(getApplicationContext(),"Sesion iniciada con : \n"+auth.getCurrentUser().getDisplayName(),Toast.LENGTH_SHORT).show();
-                startActivity(new Intent(getApplicationContext(),MainMenuActivity.class));
-                finish();
-            }else{
-                signIn();
-            }
+            signIn();
         });
         btnInicioSesion.setOnClickListener(e->{
-            auth.signOut();
-            googleSignInClient.signOut();
             signIn(user.getText().toString(), pass.getText().toString());
         });
         addContent(layout);
@@ -86,10 +83,8 @@ public class LoginActivity extends BaseActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if (task.isSuccessful()) {
                                 // Sign in success, update UI with the signed-in user's information
-                                final FirebaseUser user = auth.getCurrentUser();
-                                Toast.makeText(LoginActivity.this, "Sesion iniciada.", Toast.LENGTH_SHORT).show();
-                                startActivity(new Intent(getApplicationContext(),MainMenuActivity.class));
-                                finish();
+                                //cargar los datos en la sesion
+                                loadSesion(auth.getCurrentUser());
                             } else {
                                 // If sign in fails, display a message to the user.
                                 Toast.makeText(LoginActivity.this, "Autenticacion fallida.", Toast.LENGTH_SHORT).show();
@@ -147,16 +142,64 @@ public class LoginActivity extends BaseActivity {
                     @Override
                     public void onComplete(@NonNull Task<AuthResult> task) {
                         if(task.isSuccessful()){
-                            Log.e("Sesion","Se inicio");
-                            FirebaseUser user = auth.getCurrentUser();
-                            //iniciar nueva actividad
-                            startActivity(new Intent(getApplicationContext(),MainMenuActivity.class));
-                            finish();
+                            FirebaseUser usuario = auth.getCurrentUser();
+                            //cargar los datos en la sesion
+                            referencia.addListenerForSingleValueEvent(new ValueEventListener() {
+                                @Override
+                                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                    boolean found = false;
+                                    for(DataSnapshot data : dataSnapshot.getChildren()){
+                                        if(data.getValue(User.class).getCorreo().equals(usuario.getEmail()))
+                                            found = true;
+                                    }
+                                    if(!found){
+                                        User nuevoUsuario = new User();
+                                        nuevoUsuario.setNombre(usuario.getDisplayName());
+                                        nuevoUsuario.setTelefono(usuario.getPhoneNumber());
+                                        nuevoUsuario.setCorreo(usuario.getEmail());
+                                        nuevoUsuario.setImagenPerfil(usuario.getPhotoUrl().toString());
+                                        referencia.child(nuevoUsuario.getKey()).setValue(nuevoUsuario, new DatabaseReference.CompletionListener() {
+                                            @Override
+                                            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                                loadSesion(auth.getCurrentUser());
+                                            }
+                                        });
+                                    }else{
+                                        loadSesion(auth.getCurrentUser());
+                                    }
+                                }
+                                @Override
+                                public void onCancelled(@NonNull DatabaseError databaseError) { }
+                            });
                         }else{
                             Log.e("Error de login","failed");
                             Toast.makeText(getApplicationContext(),"NO SE PUDO INICIAR SESION\n",Toast.LENGTH_LONG).show();
                         }
                     }
                 });
+    }
+
+    private void loadSesion(FirebaseUser user) {
+        referencia.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                User dbUser = dataSnapshot.getValue(User.class);
+                if(dbUser.getCorreo().equals(user.getEmail())){
+                    setUserSesionData(dbUser);
+                    Toast.makeText(LoginActivity.this, "Sesion iniciada.", Toast.LENGTH_SHORT).show();
+                    referencia.removeEventListener(this);
+                    startActivity(new Intent(getApplicationContext(),MainMenuActivity.class));
+                    finish();
+                }
+            }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
     }
 }

@@ -2,38 +2,40 @@ package com.barajasoft.raites.Dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.barajasoft.raites.Listeners.DialogResultListener;
 import com.barajasoft.raites.R;
 
 public class OptionChooserDialog extends Dialog {
-    public OptionChooserDialog(@NonNull Activity activity, String titulo, String[] opciones) {
+    private String optionSelected = "None";
+    public OptionChooserDialog(@NonNull Activity activity, String dlgTag, String titulo, String opc1, String opc2, DialogResultListener listener) {
         super(activity);
         setContentView(R.layout.option_chooser_dialog);
         TextView title = findViewById(R.id.title);
-        LinearLayout layout = findViewById(R.id.layout);
         Button btnConfirmar = findViewById(R.id.btnConfirmar);
-        title.setText(titulo);
-        for(String opc : opciones){
-            Button btn = new Button(getContext());
-            LinearLayout.LayoutParams btnParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                    LinearLayout.LayoutParams.WRAP_CONTENT);
-            btnParams.weight = 1;
-            btnParams.width = LinearLayout.LayoutParams.MATCH_PARENT;
-            btnParams.height = LinearLayout.LayoutParams.WRAP_CONTENT;
-            btn.setBackgroundColor(Color.parseColor("#0277BD"));
-            btn.setTextColor(Color.parseColor("#EEEEEE"));
-            btn.setText(opc);
-            //falta el font family
-            btn.setLayoutParams(btnParams);
-            layout.addView(btn);
-        }
-        btnConfirmar.setOnClickListener(e->{
-
+        Button btnOpcionOne = findViewById(R.id.btnOpcionOne);
+        Button btnOpcionTwo = findViewById(R.id.btnOpcionTwo);
+        btnOpcionOne.setText(opc1);
+        btnOpcionTwo.setText(opc2);
+        btnOpcionOne.setOnClickListener(e->{
+            btnOpcionOne.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800")));
+            btnOpcionTwo.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0277BD")));
+            optionSelected = opc1;
+            listener.result(dlgTag,optionSelected);
+            dismiss();
         });
+        btnOpcionTwo.setOnClickListener(e->{
+            btnOpcionTwo.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800")));
+            btnOpcionOne.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0277BD")));
+            optionSelected = opc2;
+            listener.result(dlgTag,optionSelected);
+            dismiss();
+        });
+        title.setText(titulo);
     }
 }

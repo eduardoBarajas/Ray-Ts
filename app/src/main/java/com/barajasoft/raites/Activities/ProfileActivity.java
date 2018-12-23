@@ -15,6 +15,7 @@ public class ProfileActivity extends BaseActivity {
         disableViewPager();
         initDrawer();
         setNavViewMenu("perfil");
+        setToolbar("","Mi Perfil");
         View layout = LayoutInflater.from(this).inflate(R.layout.profile_activity,null);
         addContent(layout);
     }

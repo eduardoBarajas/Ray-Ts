@@ -15,6 +15,7 @@ public class AboutActivity extends BaseActivity {
         disableViewPager();
         initDrawer();
         setNavViewMenu("acerca_nosotros");
+        setToolbar("","Acerca De Nosotros");
         View layout = LayoutInflater.from(this).inflate(R.layout.about_activity,null);
         addContent(layout);
     }

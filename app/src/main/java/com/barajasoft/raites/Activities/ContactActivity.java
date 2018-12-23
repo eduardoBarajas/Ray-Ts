@@ -15,6 +15,7 @@ public class ContactActivity extends BaseActivity {
         disableViewPager();
         initDrawer();
         setNavViewMenu("contactanos");
+        setToolbar("","Contacto");
         View layout = LayoutInflater.from(this).inflate(R.layout.contact_activity,null);
         addContent(layout);
     }

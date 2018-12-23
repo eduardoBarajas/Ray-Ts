@@ -256,7 +256,8 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
     }
 
     protected void setToolbar(String color, String label){
-        toolbar.setBackgroundColor(Color.parseColor(color));
+        if(!color.isEmpty())
+            toolbar.setBackgroundColor(Color.parseColor(color));
         toolbar.setSubtitle(label);
     }
 }

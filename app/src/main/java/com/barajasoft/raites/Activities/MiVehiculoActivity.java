@@ -15,6 +15,7 @@ public class MiVehiculoActivity extends BaseActivity {
         disableViewPager();
         initDrawer();
         setNavViewMenu("miVehiculo");
+        setToolbar("","Mi Vehiculo");
         View layout = LayoutInflater.from(this).inflate(R.layout.mi_vehiculo_activity,null);
         addContent(layout);
     }

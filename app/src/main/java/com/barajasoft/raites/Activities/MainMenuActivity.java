@@ -14,5 +14,6 @@ public class MainMenuActivity extends BaseActivity {
         initDrawer();
         setNavViewMenu("inicio");
         initViewPager("MainMenu");
+        setToolbar("","Inicio");
     }
 }

@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.barajasoft.raites.R;
@@ -29,7 +30,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class LoginActivity extends BaseActivity {
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth;
-    private String pass, user;
     private final int SIGN_IN = 751;
 
     @Override
@@ -46,8 +46,9 @@ public class LoginActivity extends BaseActivity {
         disableViewPager();
         setToolbar("#0277BD","Login");
         View layout = LayoutInflater.from(this).inflate(R.layout.login_activity,null);
-        user = ((TextInputEditText)layout.findViewById(R.id.txtEmail)).getText().toString();
-        pass = ((TextInputEditText)layout.findViewById(R.id.txtPass)).getText().toString();
+        TextInputEditText user, pass;
+        user = layout.findViewById(R.id.txtEmail);
+        pass = layout.findViewById(R.id.txtPass);
         Button btnInicioSesion = layout.findViewById(R.id.btnInicioSesion);
         Button btnInicioSesionGoogle = layout.findViewById(R.id.btnInicioGoogle);
         Button btnCrearCuenta = layout.findViewById(R.id.btnCrearCuenta);
@@ -72,7 +73,7 @@ public class LoginActivity extends BaseActivity {
         btnInicioSesion.setOnClickListener(e->{
             auth.signOut();
             googleSignInClient.signOut();
-            signIn(user, pass);
+            signIn(user.getText().toString(), pass.getText().toString());
         });
         addContent(layout);
     }

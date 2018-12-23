@@ -15,6 +15,7 @@ public class PublicarViajeActivity extends BaseActivity {
         disableViewPager();
         initDrawer();
         setNavViewMenu("publicar_viaje");
+        setToolbar("","Agendar Viaje");
         View layout = LayoutInflater.from(this).inflate(R.layout.publicar_viaje_activity,null);
         addContent(layout);
     }

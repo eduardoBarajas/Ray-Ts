@@ -15,6 +15,7 @@ public class HelpActivity extends BaseActivity {
         disableViewPager();
         initDrawer();
         setNavViewMenu("ayuda");
+        setToolbar("","Ayuda");
         View layout = LayoutInflater.from(this).inflate(R.layout.help_activity,null);
         addContent(layout);
     }

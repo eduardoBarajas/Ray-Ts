@@ -44,11 +44,16 @@ public class LoginActivity extends BaseActivity {
         disableBottomMenu();
         disableDrawer();
         disableViewPager();
+        setToolbar("#0277BD","Login");
         View layout = LayoutInflater.from(this).inflate(R.layout.login_activity,null);
         user = ((TextInputEditText)layout.findViewById(R.id.txtEmail)).getText().toString();
         pass = ((TextInputEditText)layout.findViewById(R.id.txtPass)).getText().toString();
         Button btnInicioSesion = layout.findViewById(R.id.btnInicioSesion);
         Button btnInicioSesionGoogle = layout.findViewById(R.id.btnInicioGoogle);
+        Button btnCrearCuenta = layout.findViewById(R.id.btnCrearCuenta);
+        btnCrearCuenta.setOnClickListener(e->{
+            startActivity(new Intent(LoginActivity.this,RegisterUserActivity.class));
+        });
         if(auth.getCurrentUser()==null){
             googleSignInClient.signOut();
         }else{

@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.barajasoft.raites">
     <uses-permission android:name="android.permission.INTERNET"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.VIBRATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -69,6 +72,13 @@
         <activity android:name=".Activities.AboutActivity">
             <intent-filter>
                 <action android:name="android.intent.action.ACERCA_NOSOTROS" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity android:name=".Activities.RegisterUserActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.REGISTRAR_USER" />
 
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>

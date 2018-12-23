@@ -1,6 +1,7 @@
 package com.barajasoft.raites.Activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.NavigationView;
@@ -29,6 +30,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import static android.view.KeyEvent.KEYCODE_BACK;
 
 public class BaseActivity extends AppCompatActivity implements OnPageChangeListener {
+    protected  static final int PICK_IMAGE = 765;
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth;
     private DrawerLayout drawerLayout;
@@ -39,6 +41,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
     private MenuItem prevMenuItem = null;
     private LinearLayout contentLayout;
     private OnPageChangeListener onPageChangeListener;
+    private Toolbar toolbar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -56,7 +59,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
         drawerLayout = findViewById(R.id.drawer);
         drawer = findViewById(R.id.drawer_layout);
 
-        Toolbar toolbar = findViewById(R.id.toolbar);
+        toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
     }
 
@@ -250,5 +253,10 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
         viewPager.setCurrentItem(position);
         bottomNavigation.getMenu().getItem(position).setChecked(true);
         prevMenuItem = bottomNavigation.getMenu().getItem(position);
+    }
+
+    protected void setToolbar(String color, String label){
+        toolbar.setBackgroundColor(Color.parseColor(color));
+        toolbar.setSubtitle(label);
     }
 }

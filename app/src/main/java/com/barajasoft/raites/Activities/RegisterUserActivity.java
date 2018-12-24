@@ -121,7 +121,7 @@ public class RegisterUserActivity extends BaseActivity {
             myDir.mkdirs();
             archivo = new File(myDir,"perfil.jpg");
             try {
-                Bitmap resizedBitmap = Bitmap.createScaledBitmap(ImageAngleCorrector.getFixedBitmap(getContentResolver(),imageDir), 480, 360, false);
+                Bitmap resizedBitmap = Bitmap.createScaledBitmap(ImageAngleCorrector.getFixedBitmap(getContentResolver(),imageDir), 1024, 768, false);
                 FileOutputStream out = new FileOutputStream(archivo);
                 resizedBitmap.compress(Bitmap.CompressFormat.JPEG, 100, out);
                 out.flush();

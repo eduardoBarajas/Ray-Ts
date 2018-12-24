@@ -12,19 +12,26 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <ImageView
+        <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/profile"
-            android:layout_width="match_parent"
-            android:layout_height="200dp"
-            android:layout_gravity="start"
-            android:src="@drawable/no_profile" />
+            android:layout_width="300dp"
+            android:layout_height="300dp"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            app:civ_border_color="#EEEEEE"
+            app:civ_border_width="4dp"
+            app:civ_shadow="true"
+            app:civ_shadow_color="#8BC34A"
+            app:civ_shadow_radius="10"
+            app:srcCompat="@drawable/no_profile" />
 
         <android.support.design.widget.FloatingActionButton
+            android:id="@+id/btnChangeProfile"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
             android:layout_marginRight="56dp"
-            android:layout_marginTop="-16dp"
+            android:layout_marginTop="-32dp"
             android:src="@drawable/camera_icon"
             app:backgroundTint="@color/coolBlue" />
 

@@ -83,6 +83,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activities.RegisterCarActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.REGISTRAR_CARRO" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="preloaded_fonts"

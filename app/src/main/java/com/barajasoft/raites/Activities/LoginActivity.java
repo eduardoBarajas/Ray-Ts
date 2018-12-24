@@ -158,6 +158,7 @@ public class LoginActivity extends BaseActivity {
                                         nuevoUsuario.setTelefono(usuario.getPhoneNumber());
                                         nuevoUsuario.setCorreo(usuario.getEmail());
                                         nuevoUsuario.setImagenPerfil(usuario.getPhotoUrl().toString());
+                                        nuevoUsuario.setRating(3);
                                         referencia.child(nuevoUsuario.getKey()).setValue(nuevoUsuario, new DatabaseReference.CompletionListener() {
                                             @Override
                                             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {

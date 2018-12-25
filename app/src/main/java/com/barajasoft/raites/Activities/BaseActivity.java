@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.barajasoft.raites.Adapters.ViewPagerAdapter;
 import com.barajasoft.raites.Entities.User;
+import com.barajasoft.raites.Entities.Vehiculo;
 import com.barajasoft.raites.Fragments.BuscarViajesFragment;
 import com.barajasoft.raites.Fragments.ViajesActivosFragment;
 import com.barajasoft.raites.Listeners.OnPageChangeListener;
@@ -55,6 +56,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
     private SharedPreferences.Editor editor;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference usuariosReference = database.getReference("Usuarios");
+    private DatabaseReference vehiculosReference = database.getReference("Vehiculos");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,6 +95,36 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
+        vehiculosReference.addChildEventListener(new ChildEventListener() {
+            @Override
+            public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+            @Override
+            public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
+                Vehiculo currentVehiculo = dataSnapshot.getValue(Vehiculo.class);
+                if(currentVehiculo.getUserKey().equals(pref.getString("key",null)))
+                    setVehiculoSesionData(currentVehiculo);
+            }
+            @Override
+            public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) { }
+            @Override
+            public void onChildMoved(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+    }
+
+    protected void setVehiculoSesionData(Vehiculo sesion){
+        editor.putString("matricula",sesion.getMatricula());
+        editor.putString("modelo",sesion.getModelo());
+        editor.putString("marca",sesion.getMarca());
+        editor.putInt("espaciosDisponibles",sesion.getEspaciosDisponibles());
+        editor.putString("keyVehiculo",sesion.getKey());
+        editor.putString("keyUsuarioVehiculo",sesion.getUserKey());
+        editor.putString("imageVehiculoLink",sesion.getImageLink());
+        editor.putBoolean("vehiculoValidado",sesion.isValidado());
+        editor.putBoolean("carAdded",true);
+        editor.commit();
+        update();
     }
 
     protected void setUserSesionData(User sesion){
@@ -296,6 +328,20 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
         return true;
     }
 
+    protected void deleteVehiculoSesion(){
+        editor.remove("matricula");
+        editor.remove("modelo");
+        editor.remove("marca");
+        editor.remove("espaciosDisponibles");
+        editor.remove("keyVehiculo");
+        editor.remove("keyUsuarioVehiculo");
+        editor.remove("imageVehiculoLink");
+        editor.remove("vehiculoValidado");
+        editor.putBoolean("carAdded",false);
+        editor.commit();
+        update();
+    }
+
     @Override
     public void pageChanged(int position) {
         viewPager.setCurrentItem(position);
@@ -308,4 +354,14 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
             toolbar.setBackgroundColor(Color.parseColor(color));
         toolbar.setSubtitle(label);
     }
+
+    protected String getCurrentUserKey(){
+        return pref.getString("key",null);
+    }
+
+    protected boolean isVehiculoAgregado(){
+        return pref.getBoolean("carAdded",false);
+    }
+
+    protected void update(){ }
 }

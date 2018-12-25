@@ -106,47 +106,19 @@ public class ProfileActivity extends BaseActivity {
             public void result(String dlgTag, Object result) {
                 if(dlgTag.equals("EditarEdadDlg")&&!((String)result).isEmpty()){
                     age.setText((String)result);
-                    Map<String,Object> dato = new HashMap<>();
-                    dato.put("edad",Integer.parseInt((String)result));
-                    referencia.child(pref.getString("key",null)).updateChildren(dato, new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                            Toast.makeText(getApplicationContext(),"Cambio realizado con exito",Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    updateFieldInFirebase("edad",result,true);
                 }
                 if(dlgTag.equals("EditarNombreDlg")&&!((String)result).isEmpty()){
                     name.setText((String)result);
-                    Map<String,Object> dato = new HashMap<>();
-                    dato.put("nombre",(String)result);
-                    referencia.child(pref.getString("key",null)).updateChildren(dato, new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                            Toast.makeText(getApplicationContext(),"Cambio realizado con exito",Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    updateFieldInFirebase("nombre",result,false);
                 }
                 if(dlgTag.equals("EditarTelefonoDlg")&&!((String)result).isEmpty()){
                     phone.setText((String)result);
-                    Map<String,Object> dato = new HashMap<>();
-                    dato.put("telefono",(String)result);
-                    referencia.child(pref.getString("key",null)).updateChildren(dato, new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                            Toast.makeText(getApplicationContext(),"Cambio realizado con exito",Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    updateFieldInFirebase("telefono",result,false);
                 }
                 if(dlgTag.equals("EditarSexoDlg")){
                     sex.setText((String)result);
-                    Map<String,Object> dato = new HashMap<>();
-                    dato.put("sexo",(String)result);
-                    referencia.child(pref.getString("key",null)).updateChildren(dato, new DatabaseReference.CompletionListener() {
-                        @Override
-                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                            Toast.makeText(getApplicationContext(),"Cambio realizado con exito",Toast.LENGTH_SHORT).show();
-                        }
-                    });
+                    updateFieldInFirebase("sexo",result,false);
                 }
             }
         };
@@ -219,5 +191,19 @@ public class ProfileActivity extends BaseActivity {
                     });
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    private void updateFieldInFirebase(String field, Object data, boolean isNumber){
+        Map<String,Object> dato = new HashMap<>();
+        if(isNumber)
+            dato.put(field,Integer.parseInt(data.toString()));
+        else
+            dato.put(field,data);
+        referencia.child(pref.getString("key",null)).updateChildren(dato, new DatabaseReference.CompletionListener() {
+            @Override
+            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                Toast.makeText(getApplicationContext(),"Cambio realizado con exito",Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 }

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Raites</string>
     <string name="clientOath">40010026093-i1anp78eisup60p6dgfvfobhhlv41asn.apps.googleusercontent.com</string>
+    <string name="mapbox_access_token">pk.eyJ1IjoiZWR1MjMiLCJhIjoiY2psa2lpNTRzMG43azNrbzU2emYxaThtNiJ9.j20WpkbxDZbaszbFUToebg</string>
 </resources>

@@ -156,6 +156,8 @@ public class LoginActivity extends BaseActivity {
                                         User nuevoUsuario = new User();
                                         nuevoUsuario.setNombre(usuario.getDisplayName());
                                         nuevoUsuario.setTelefono(usuario.getPhoneNumber());
+                                        if(nuevoUsuario.getTelefono() == null)
+                                            nuevoUsuario.setTelefono("");
                                         nuevoUsuario.setCorreo(usuario.getEmail());
                                         nuevoUsuario.setImagenPerfil(usuario.getPhotoUrl().toString());
                                         nuevoUsuario.setRating(3);

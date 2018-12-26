@@ -40,7 +40,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import static android.view.KeyEvent.KEYCODE_BACK;
 
 public class BaseActivity extends AppCompatActivity implements OnPageChangeListener {
-    protected  static final int PICK_IMAGE = 765;
+    protected static final int PICK_IMAGE = 765;
+    protected static final int PICK_DIRECCION_SALIDA = 123;
+    protected static final int PICK_DIRECCION_DESTINO = 321;
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth;
     private DrawerLayout drawerLayout;

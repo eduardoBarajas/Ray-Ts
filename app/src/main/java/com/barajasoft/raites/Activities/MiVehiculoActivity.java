@@ -91,16 +91,8 @@ public class MiVehiculoActivity extends BaseActivity {
         editMatricula = layout.findViewById(R.id.editMatricula);
         editEspacio = layout.findViewById(R.id.editEspaciosDisponibles);
         carImage = layout.findViewById(R.id.carImage);
-        FloatingActionButton btnHelp = layout.findViewById(R.id.helpButton);
         FloatingActionButton btnCarImage = layout.findViewById(R.id.carImageButton);
         Button btnEliminar = layout.findViewById(R.id.btnEliminarVehiculo);
-        btnHelp.setOnClickListener(e->{
-            AlertDialog dialog = new AlertDialog(MiVehiculoActivity.this,"Estado de autorizacion",
-                    "El estado de autorizacion indica si el usuario tiene la posibilidad de programar viajes" +
-                            " dentro de la aplicacion, si ya ingresaste tu vehiculo ahora debes entrar a nuestro sitio web, " +
-                            "https://www.raites.com/validarVehiculo para solicitar la autorizacion.");
-            dialog.show();
-        });
         DialogResultListener listener = new DialogResultListener() {
             @Override
             public void result(String dlgTag, Object result) {

@@ -24,6 +24,7 @@ import com.barajasoft.raites.Adapters.ViewPagerAdapter;
 import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.Entities.Vehiculo;
 import com.barajasoft.raites.Fragments.BuscarViajesFragment;
+import com.barajasoft.raites.Fragments.MapFragment;
 import com.barajasoft.raites.Fragments.ViajesActivosFragment;
 import com.barajasoft.raites.Listeners.OnPageChangeListener;
 import com.barajasoft.raites.R;
@@ -41,8 +42,7 @@ import static android.view.KeyEvent.KEYCODE_BACK;
 
 public class BaseActivity extends AppCompatActivity implements OnPageChangeListener {
     protected static final int PICK_IMAGE = 765;
-    protected static final int PICK_DIRECCION_SALIDA = 123;
-    protected static final int PICK_DIRECCION_DESTINO = 321;
+    protected static final int PICK_DIRECCION = 123;
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth;
     private DrawerLayout drawerLayout;
@@ -54,6 +54,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
     private LinearLayout contentLayout;
     private OnPageChangeListener onPageChangeListener;
     private Toolbar toolbar;
+    private ViewPagerAdapter adapter;
     private SharedPreferences pref;
     private SharedPreferences.Editor editor;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -144,7 +145,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
     }
 
     protected void initViewPager(String activity) {
-        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter = new ViewPagerAdapter(getSupportFragmentManager());
         switch (activity){
             case "MainMenu":
                 ViajesActivosFragment f = new ViajesActivosFragment();
@@ -360,6 +361,8 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
     protected String getCurrentUserKey(){
         return pref.getString("key",null);
     }
+
+    protected ViewPagerAdapter getViewPagerAdapter(){ return adapter; }
 
     protected boolean isVehiculoAgregado(){
         return pref.getBoolean("carAdded",false);

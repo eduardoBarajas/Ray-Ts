@@ -107,9 +107,7 @@ public class LoginActivity extends BaseActivity {
         //checar si el usuario ya habia iniciado sesion
         FirebaseUser currentUser = auth.getCurrentUser();
         if(currentUser!=null){//si diferente de nulo entonces si existia una sesion
-            //llevar a la otra activity
-            startActivity(new Intent(getApplicationContext(),MainMenuActivity.class));
-            finish();
+            loadSesion(currentUser);
         }
     }
 
@@ -189,6 +187,7 @@ public class LoginActivity extends BaseActivity {
                 User dbUser = dataSnapshot.getValue(User.class);
                 if(dbUser.getCorreo().equals(user.getEmail())){
                     setUserSesionData(dbUser);
+                    setUserVehiculoFromKey(dbUser.getKey());
                     Toast.makeText(LoginActivity.this, "Sesion iniciada.", Toast.LENGTH_SHORT).show();
                     referencia.removeEventListener(this);
                     startActivity(new Intent(getApplicationContext(),MainMenuActivity.class));

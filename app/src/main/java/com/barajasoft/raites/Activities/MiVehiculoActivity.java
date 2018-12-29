@@ -205,13 +205,14 @@ public class MiVehiculoActivity extends BaseActivity {
         if(isVehiculoAgregado()){
             noCarLayout.setVisibility(View.GONE);
             carAddedLayout.setVisibility(View.VISIBLE);
+            updateUI();
             Log.e("Agregado","Segun entro aqui");
         }else{
             noCarLayout.setVisibility(View.VISIBLE);
             carAddedLayout.setVisibility(View.GONE);
             Log.e("NoAgregado","Segun entro aqui");
         }
-        Log.e("Updated","lol");
+
     }
 
     @Override

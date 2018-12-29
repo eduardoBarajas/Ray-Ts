@@ -1,6 +1,7 @@
 package com.barajasoft.raites.Adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -13,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.barajasoft.raites.Activities.ExpandViajeActivity;
 import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.Entities.Viaje;
 import com.barajasoft.raites.R;
@@ -75,7 +77,7 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
             holder.txtRol.setText("Pasajero");
         }
         holder.verMas.setOnClickListener(e->{
-            Toast.makeText(context, "Lol", Toast.LENGTH_SHORT).show();
+            context.startActivity(new Intent(context, ExpandViajeActivity.class));
         });
         usuariosReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override

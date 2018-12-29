@@ -55,6 +55,7 @@ public class ProfileActivity extends BaseActivity {
     private DatabaseReference referencia = database.getReference("Usuarios");
     private ImageView profile;
     private SharedPreferences pref;
+    private TextView name, age, sex, email, phone;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,7 +78,6 @@ public class ProfileActivity extends BaseActivity {
         setNavViewMenu("perfil");
         setToolbar("","Mi Perfil");
         View layout = LayoutInflater.from(this).inflate(R.layout.profile_activity,null);
-        TextView name, age, sex, email, phone;
         ImageView editName, editAge, editSex, editEmail, editPhone;
         editName = layout.findViewById(R.id.editName);
         editAge = layout.findViewById(R.id.editAge);
@@ -205,5 +205,19 @@ public class ProfileActivity extends BaseActivity {
                 Toast.makeText(getApplicationContext(),"Cambio realizado con exito",Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    @Override
+    protected void update() {
+        super.update();
+        updateUI();
+    }
+
+    private void updateUI() {
+        name.setText(pref.getString("nombre",null));
+        sex.setText(pref.getString("sexo",null));
+        age.setText(String.valueOf(pref.getInt("edad",-1)));
+        phone.setText(pref.getString("telefono", null));
+        imageLoader.displayImage(pref.getString("linkPerfil",null), profile, options);
     }
 }

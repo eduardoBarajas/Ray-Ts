@@ -1,10 +1,12 @@
 package com.barajasoft.raites.Activities;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -58,10 +60,12 @@ public class PublicarViajeActivity extends BaseActivity{
     private DatabaseReference viajesReference = database.getReference("Viajes");
     private DatabaseReference ciudadesReference = database.getReference("Ciudades");
     private List<String> cities = new LinkedList<>();
+    private SharedPreferences pref;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT-8:00"));
         //deshabilita el menu del fondo definido en la clase padre
         disableBottomMenu();
@@ -83,18 +87,30 @@ public class PublicarViajeActivity extends BaseActivity{
         cuposLayout = layout.findViewById(R.id.cuposLayout);
         cuposTextView = layout.findViewById(R.id.cuposTextView);
         btnPasajero.setOnClickListener(e->{
-            btnPasajero.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800")));
-            btnConductor.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0277BD")));
-            rolViaje = "Pasajero";
-            cuposTextView.setText("Cuantos asientos necesitas?");
-            cuposLayout.setVisibility(View.VISIBLE);
+            if(pref.getBoolean("validadoPasajero", false)){
+                btnPasajero.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800")));
+                btnConductor.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0277BD")));
+                rolViaje = "Pasajero";
+                cuposTextView.setText("Cuantos asientos necesitas?");
+                cuposLayout.setVisibility(View.VISIBLE);
+            }else{
+                Snackbar.make(getCurrentFocus(), "No haz llenado tus datos de perfil, por favor llenar todos los campos primero", Snackbar.LENGTH_LONG).show();
+            }
         });
         btnConductor.setOnClickListener(e->{
-            btnConductor.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800")));
-            btnPasajero.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0277BD")));
-            rolViaje = "Conductor";
-            cuposTextView.setText("Cuantos asientos disponibles tendras?");
-            cuposLayout.setVisibility(View.VISIBLE);
+            if(pref.getBoolean("validadoConductor", false)) {
+                if (pref.getBoolean("validadoPasajero", false)) {
+                    btnConductor.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800")));
+                    btnPasajero.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0277BD")));
+                    rolViaje = "Conductor";
+                    cuposTextView.setText("Cuantos asientos disponibles tendras?");
+                    cuposLayout.setVisibility(View.VISIBLE);
+                } else {
+                    Snackbar.make(getCurrentFocus(), "No haz llenado tus datos de perfil, por favor llenar todos los campos primero", Snackbar.LENGTH_LONG).show();
+                }
+            }else{
+                Snackbar.make(getCurrentFocus(), "No haz agregado un vehiculo, por favor agrega uno primero primero", Snackbar.LENGTH_LONG).show();
+            }
         });
         btnCamino.setOnClickListener(e->{
             Intent intent = new Intent(PublicarViajeActivity.this,MapActivity.class);

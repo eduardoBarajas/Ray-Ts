@@ -1,4 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/option1"
+            android:icon="@drawable/viajes_programados_icon"
+            android:title="Viaje Actual"/>
+        <item
+            android:id="@+id/option2"
+            android:icon="@drawable/map_icon"
+            android:title="Ruta Actual"/>
+    </group>
 </menu>

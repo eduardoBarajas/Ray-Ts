@@ -29,6 +29,7 @@ public class LauncherActivity extends AppCompatActivity {
     private SharedPreferences.Editor editor;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference ciudadesReference = database.getReference("Ciudades");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

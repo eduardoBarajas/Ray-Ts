@@ -9,8 +9,8 @@ public class ExpandViajeActivity extends BaseActivity {
         //deshabilita el menu del fondo definido en la clase padre
         //disableBottomMenu();
         disableDrawer();
+        disableToolbar();
         setBottomMenu("ExpandedViaje");
         initViewPager("ExpandedViaje");
-        setToolbar("","Detalles Viaje");
     }
 }

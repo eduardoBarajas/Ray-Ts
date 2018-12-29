@@ -24,6 +24,7 @@ import com.barajasoft.raites.Adapters.ViewPagerAdapter;
 import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.Entities.Vehiculo;
 import com.barajasoft.raites.Fragments.BuscarViajesFragment;
+import com.barajasoft.raites.Fragments.DetallesViajeFragment;
 import com.barajasoft.raites.Fragments.MapFragment;
 import com.barajasoft.raites.Fragments.ViajesActivosFragment;
 import com.barajasoft.raites.Listeners.OnPageChangeListener;
@@ -37,6 +38,10 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import static android.view.KeyEvent.KEYCODE_BACK;
 
@@ -116,6 +121,40 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
         });
     }
 
+    protected void setUserVehiculoFromKey(String key){
+        vehiculosReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean found = false;
+                for(DataSnapshot data : dataSnapshot.getChildren()){
+                    if(data.getValue(Vehiculo.class).getUserKey().equals(key)){
+                        setVehiculoSesionData(data.getValue(Vehiculo.class));
+                        found = true;
+                        break;
+                    }
+                }
+                if(!found){
+                    clearVehiculoLocalData();
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+    }
+
+    private void clearVehiculoLocalData() {
+        editor.putString("matricula", "");
+        editor.putString("modelo", "");
+        editor.putString("marca", "");
+        editor.putInt("espaciosDisponibles", -1);
+        editor.putString("keyVehiculo", "");
+        editor.putString("keyUsuarioVehiculo", "");
+        editor.putString("imageVehiculoLink", "");
+        editor.putBoolean("vehiculoValidado", false);
+        editor.putBoolean("carAdded",false);
+        editor.commit();
+    }
+
     protected void setVehiculoSesionData(Vehiculo sesion){
         editor.putString("matricula",sesion.getMatricula());
         editor.putString("modelo",sesion.getModelo());
@@ -124,10 +163,33 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
         editor.putString("keyVehiculo",sesion.getKey());
         editor.putString("keyUsuarioVehiculo",sesion.getUserKey());
         editor.putString("imageVehiculoLink",sesion.getImageLink());
-        editor.putBoolean("vehiculoValidado",sesion.isValidado());
+        editor.commit();
+        if(validarVehiculo())
+            editor.putBoolean("vehiculoValidado", true);
+        else
+            editor.putBoolean("vehiculoValidado", false);
+        editor.commit();
+        Map<String, Object> datoUsuario = new HashMap<>(), datoVehiculo = new HashMap<>();
+        if(pref.getBoolean("vehiculoValidado", false) != sesion.isValidado()){
+            datoUsuario.put("validadoConductor", pref.getBoolean("vehiculoValidado", false));
+            datoVehiculo.put("validado", pref.getBoolean("vehiculoValidado", false));
+        }
+        if(datoUsuario.size() > 0)
+            usuariosReference.child(pref.getString("key", null)).updateChildren(datoUsuario);
+        if(datoVehiculo.size() > 0)
+            vehiculosReference.child(sesion.getKey()).updateChildren(datoVehiculo);
         editor.putBoolean("carAdded",true);
         editor.commit();
         update();
+    }
+
+    private boolean validarVehiculo() {
+        if(!pref.getString("matricula", null).isEmpty()&&!pref.getString("modelo", null).isEmpty()
+                &&!pref.getString("marca", null).isEmpty()&&pref.getInt("espaciosDisponibles", -1) > 0){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     protected void setUserSesionData(User sesion){
@@ -139,9 +201,36 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
         editor.putFloat("rating",sesion.getRating());
         editor.putString("sexo",sesion.getSexo());
         editor.putString("telefono",sesion.getTelefono());
-        editor.putBoolean("validadoConductor",sesion.isValidadoConductor());
-        editor.putBoolean("validadoPasajero",sesion.isValidadoPasajero());
         editor.commit();
+        if(validarUsuario())
+            editor.putBoolean("validadoPasajero", true);
+        else
+            editor.putBoolean("validadoPasajero", false);
+        if(pref.contains("vehiculoValidado")&&pref.getBoolean("vehiculoValidado", false))
+            editor.putBoolean("validadoConductor", true);
+        else
+            editor.putBoolean("validadoConductor", false);
+        editor.commit();
+        Map<String, Object> datos = new HashMap<>();
+        if(sesion.isValidadoConductor() != pref.getBoolean("validadoConductor", false))
+            datos.put("validadoConductor", pref.getBoolean("validadoConductor", false));
+        if(sesion.isValidadoPasajero() != pref.getBoolean("validadoPasajero", false))
+            datos.put("validadoPasajero", pref.getBoolean("validadoPasajero", false));
+        if(datos.size()>0){
+            usuariosReference.child(sesion.getKey()).updateChildren(datos);
+        }
+        editor.commit();
+        update();
+    }
+
+    private boolean validarUsuario() {
+        if(!pref.getString("correo", null).isEmpty() && pref.getInt("edad", -1) > 0 && !pref.getString("linkPerfil", null).isEmpty()
+                && !pref.getString("key", null).isEmpty()&&!pref.getString("nombre", null).isEmpty()&&pref.getFloat("rating", -1) > 0
+                &&!pref.getString("sexo", null).isEmpty()&&!pref.getString("telefono", null).isEmpty()){
+            return true;
+        }else{
+            return false;
+        }
     }
 
     protected void initViewPager(String activity) {
@@ -152,6 +241,10 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                 f.setListener(onPageChangeListener);
                 adapter.addFragment(f);
                 adapter.addFragment(new BuscarViajesFragment());
+                break;
+            case "ExpandedViaje":
+                adapter.addFragment(new DetallesViajeFragment());
+                adapter.addFragment(new MapFragment());
                 break;
         }
         viewPager.setAdapter(adapter);
@@ -302,7 +395,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                 bottomNavigation.inflateMenu(R.menu.main_menu_bottom_menu);
                 break;
             case "ExpandedViaje":
-
+                bottomNavigation.inflateMenu(R.menu.expanded_viaje_bottom_menu);
                 break;
         }
         /*
@@ -359,6 +452,10 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
         if(!color.isEmpty())
             toolbar.setBackgroundColor(Color.parseColor(color));
         toolbar.setSubtitle(label);
+    }
+
+    protected void disableToolbar(){
+        toolbar.setVisibility(View.GONE);
     }
 
     protected String getCurrentUserKey(){

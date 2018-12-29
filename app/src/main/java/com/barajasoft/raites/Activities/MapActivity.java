@@ -20,6 +20,11 @@ import android.widget.Toast;
 import com.barajasoft.raites.Dialogs.OptionChooserDialog;
 import com.barajasoft.raites.Listeners.DialogResultListener;
 import com.barajasoft.raites.R;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.directions.v5.models.DirectionsRoute;
 import com.mapbox.api.geocoding.v5.GeocodingCriteria;
@@ -40,6 +45,7 @@ import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
 import com.mapbox.services.android.navigation.ui.v5.route.NavigationMapRoute;
 import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -49,6 +55,8 @@ import retrofit2.Response;
 
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
     private MapboxGeocoding mapboxGeocoding;
+    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private DatabaseReference ciudadesReference = database.getReference("Ciudades");
     private int RESULT_CODE = RESULT_CANCELED;
     private EditText txtBuscar;
     private Button btnBuscar, btnConfirmar;
@@ -70,11 +78,11 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
     private MapView mapView;
     private MapboxMap mapboxMap;
     private Marker markerInicio = null, markerDestino = null;
-    private String[] ciudadesList = new String[]{"Ensenada","Tijuana","Tecate","Playas de Rosarito","Mexicali"};
     private DialogResultListener listener;
     private DirectionsRoute currentRoute;
     private static final String TAG = "Directions";
     private NavigationMapRoute navigationMapRoute;
+    private ArrayAdapter<String> ciudadesData;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,9 +93,21 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
         btnConfirmar = findViewById(R.id.btnConfirmar);
         ciudades = findViewById(R.id.ciudadesSpinner);
         ciudades.setOnItemSelectedListener(this);
-        ArrayAdapter<String> ciudadesData = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, ciudadesList);
+        ciudadesData = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new LinkedList<>());
         ciudadesData.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        ciudades.setAdapter(ciudadesData);
+
+        ciudadesReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot data : dataSnapshot.getChildren()){
+                    ciudadesData.add(data.getValue(String.class));
+                }
+                ciudadesData.notifyDataSetChanged();
+                ciudades.setAdapter(ciudadesData);
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
         btnBuscar.setOnClickListener(e->{
             //para esconder el teclado virtual se usan estas dos lineas siguientes
             InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
@@ -272,6 +292,11 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
     }
 
     @Override
+    protected void onPostCreate(@Nullable Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         mapView.onStart();
@@ -329,6 +354,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         ciudad = adapterView.getItemAtPosition(i).toString();
+        Log.e("CLICK","AQui "+ciudad);
     }
 
     @Override

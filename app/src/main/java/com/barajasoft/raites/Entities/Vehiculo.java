@@ -8,7 +8,7 @@ public class Vehiculo {
     private String imageLink = "";
     private String marca = "";
     private String modelo = "";
-    private int espaciosDisponibles = 0;
+    private int espaciosDisponibles = -1;
     private String matricula = "";
     private boolean validado = false;
     public Vehiculo(){}

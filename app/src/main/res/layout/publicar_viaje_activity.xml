@@ -1,79 +1,73 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout android:id="@+id/linearLayoutRoot"
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:fillViewport="true">
+    <LinearLayout android:id="@+id/linearLayoutRoot"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        xmlns:android="http://schemas.android.com/apk/res/android">
+        android:orientation="vertical">
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/roboto"
-        android:text="Salida"
-        android:textAlignment="center"
-        android:textSize="18sp" />
-    <TextView
-        android:id="@+id/txtSalida"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:fontFamily="@font/roboto"
-        android:textAlignment="center"
-        android:textSize="18sp" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/roboto"
+            android:text="Salida"
+            android:textAlignment="center"
+            android:textColor="@color/colorAccent"
+            android:textSize="24sp" />
+        <TextView
+            android:id="@+id/txtSalida"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="8dp"
+            android:fontFamily="@font/roboto"
+            android:textAlignment="center"
+            android:textSize="18sp" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/roboto"
-        android:text="Destino"
-        android:textAlignment="center"
-        android:textSize="18sp" />
-    <TextView
-        android:id="@+id/txtDestino"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="16dp"
-        android:fontFamily="@font/roboto"
-        android:textAlignment="center"
-        android:textSize="18sp" />
-
-    <Button
-        android:id="@+id/btnCamino"
-        android:layout_width="wrap_content"
-        android:layout_height="30dp"
-        android:layout_gravity="center"
-        android:layout_margin="32dp"
-        android:layout_marginBottom="8dp"
-        android:background="@drawable/button_round_green"
-        android:fontFamily="@font/roboto"
-        android:padding="8dp"
-        android:text="Definir Puntos"
-        android:textColor="@color/cardview_light_background" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:text="Que seras en este viaje?"
-        android:textAlignment="center"
-        android:textSize="18sp" />
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/roboto"
+            android:text="Destino"
+            android:textAlignment="center"
+            android:textColor="@color/colorAccent"
+            android:textSize="24sp" />
+        <TextView
+            android:id="@+id/txtDestino"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="16dp"
+            android:fontFamily="@font/roboto"
+            android:textAlignment="center"
+            android:textSize="18sp" />
 
         <Button
-            android:id="@+id/btnConductor"
+            android:id="@+id/btnCamino"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="32dp"
+            android:layout_marginBottom="8dp"
+            android:background="@drawable/button_round_green"
+            android:backgroundTint="@color/coolBlue"
+            android:fontFamily="@font/roboto"
+            android:padding="6dp"
+            android:text="Definir Trayecto"
+            android:textColor="@color/cardview_light_background" />
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -81,14 +75,83 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
-            android:background="@drawable/button_round_green"
-            android:text="Conductor "
-            android:textColor="@color/cardview_light_background" />
+            android:layout_marginTop="48dp"
+            android:text="Que seras en este viaje?"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
 
-        <Button
-            android:id="@+id/btnPasajero"
+            <Button
+                android:id="@+id/btnConductor"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_round_green"
+                android:backgroundTint="@color/coolBlue"
+                android:text="Conductor "
+                android:textColor="@color/cardview_light_background" />
+
+            <Button
+                android:id="@+id/btnPasajero"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="8dp"
+                android:layout_weight="1"
+                android:background="@drawable/button_round_green"
+                android:backgroundTint="@color/coolBlue"
+                android:text="Pasajero"
+                android:textColor="@color/cardview_light_background" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/cuposLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="70dp"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                android:id="@+id/cuposTextView"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="Cuantos espacios disponibles tendras?"
+                android:textAlignment="center"
+                android:textSize="24sp" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:hint="Cupos disponibles">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/cuposDisponiblesText"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center" />
+            </android.support.design.widget.TextInputLayout>
+
+        </LinearLayout>
+
+        <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
@@ -96,37 +159,51 @@
             android:layout_marginLeft="8dp"
             android:layout_marginRight="8dp"
             android:layout_marginStart="8dp"
-            android:layout_marginTop="8dp"
-            android:layout_weight="1"
+            android:layout_marginTop="70dp"
+            android:text="Cuando sera este viaje?"
+            android:textAlignment="center"
+            android:textSize="24sp" />
+
+        <DatePicker
+            android:id="@+id/date"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp" />
+
+
+        <TimePicker
+            android:id="@+id/hora"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="8dp" />
+
+
+        <Button
+            android:id="@+id/trayectoButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="32dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginTop="48dp"
             android:background="@drawable/button_round_green"
-            android:text="Pasajero"
-            android:textColor="@color/cardview_light_background" />
+            android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
+            android:text="Ver Trayecto "
+            android:textColor="@color/cardview_light_background"
+            android:visibility="gone" />
 
-
+        <Button
+            android:id="@+id/confirmarButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:background="@drawable/button_round_green"
+            android:text="Confirmar"
+            android:textColor="@color/cardview_light_background"
+            android:visibility="gone" />
     </LinearLayout>
-
-    <Button
-        android:id="@+id/trayectoButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginLeft="8dp"
-        android:layout_marginRight="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="48dp"
-        android:background="@drawable/button_round_green"
-        android:text="Ver Trayecto "
-        android:textColor="@color/cardview_light_background"
-        android:visibility="gone" />
-
-    <Button
-        android:id="@+id/confirmarButton"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_margin="8dp"
-        android:background="@drawable/button_round_green"
-        android:text="Confirmar"
-        android:textColor="@color/cardview_light_background"
-        android:visibility="gone" />
-</LinearLayout>
+</ScrollView>

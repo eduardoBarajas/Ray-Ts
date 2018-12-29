@@ -301,6 +301,9 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
             case "MainMenu":
                 bottomNavigation.inflateMenu(R.menu.main_menu_bottom_menu);
                 break;
+            case "ExpandedViaje":
+
+                break;
         }
         /*
             El onNavigationItemSelectedListener se configura con option[indice] para que pueda ser reutilizado

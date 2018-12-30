@@ -47,7 +47,6 @@
                     android:layout_margin="8dp"
                     android:layout_weight="1"
                     android:fontFamily="@font/roboto"
-                    android:text="NombreConductor"
                     android:textAlignment="center"
                     android:textSize="18sp" />
 
@@ -132,8 +131,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:text="Correo"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -159,8 +157,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:text="Telefono"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -211,8 +208,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:text="Salida"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -238,8 +234,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:text="Destino"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -265,8 +260,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:text="Hora Salida"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -292,8 +286,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:text="Fecha Salida"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -344,8 +337,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:text="Vehiculo"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
 
                     <LinearLayout
@@ -371,8 +363,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:text="Matricula"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -423,8 +414,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="8dp"
-                            android:text="Asientos Disponibles"
-                            android:textSize="18sp" />
+                            android:textSize="14sp" />
                     </LinearLayout>
                 </LinearLayout>
             </android.support.v7.widget.CardView>
@@ -465,24 +455,55 @@
                     android:visibility="gone" />
             </android.support.v7.widget.CardView>
 
-            <Button
-                android:id="@+id/btnParada"
+            <TextView
+                android:id="@+id/labelCuantosAsientos"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:background="@drawable/button_round_green"
-                android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
-                android:text="Solicitar Parada"
-                android:textColor="@color/cardview_light_background" />
+                android:text="Cuantos asientos necesitaras?"
+                android:textAlignment="center" />
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="8dp"
+                android:hint="Numero Asientos">
+
+                <android.support.design.widget.TextInputEditText
+                    android:id="@+id/txtNumeroAsientosSolicitados"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </android.support.design.widget.TextInputLayout>
 
             <Button
                 android:id="@+id/btnViajeCompleto"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="64dp"
+                android:layout_margin="8dp"
                 android:background="@drawable/button_round_green"
                 android:backgroundTint="@color/mapbox_navigation_route_alternative_shield_color"
                 android:text="Agendar Viaje Completo"
+                android:textColor="@color/cardview_light_background" />
+
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="8dp"
+                android:layout_marginEnd="8dp"
+                android:layout_marginLeft="8dp"
+                android:layout_marginRight="8dp"
+                android:layout_marginStart="8dp"
+                android:layout_marginTop="32dp"
+                android:text="No viajas hasta destino del conductor? Solicita un punto de parada"
+                android:textAlignment="center" />
+            <Button
+                android:id="@+id/btnParada"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="64dp"
+                android:background="@drawable/button_round_green"
+                android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
+                android:text="Solicitar Parada"
                 android:textColor="@color/cardview_light_background" />
         </LinearLayout>
 

@@ -15,6 +15,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.barajasoft.raites.Activities.ExpandViajeActivity;
+import com.barajasoft.raites.Entities.SolicitudViaje;
 import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.Entities.Viaje;
 import com.barajasoft.raites.R;
@@ -36,25 +37,14 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
     private List<Viaje> viajeList = new LinkedList<>();
     private Context context;
     private SharedPreferences pref;
-    private ImageLoader imageLoader;
-    private DisplayImageOptions options;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference viajesReference = database.getReference("Viajes");
     private DatabaseReference usuariosReference = database.getReference("Usuarios");
+    private DatabaseReference solicitudesReference = database.getReference("SolicitudesDeViaje");
 
     public ViajesAdapter(Context context){
         this.context = context;
         pref = PreferenceManager.getDefaultSharedPreferences(context);
-        imageLoader = ImageLoader.getInstance();
-        options = new DisplayImageOptions.Builder()
-                .showImageOnLoading(R.drawable.loading_image) // resource or drawable
-                .showImageForEmptyUri(R.drawable.no_profile) // resource or drawable
-                .resetViewBeforeLoading(false)  // default
-                .cacheInMemory(true) // default
-                .cacheOnDisk(true) // default
-                .imageScaleType(ImageScaleType.IN_SAMPLE_POWER_OF_2) // default
-                .build();
-        imageLoader.init(ImageLoaderConfiguration.createDefault(context));
     }
 
     @NonNull
@@ -66,7 +56,6 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
     @Override
     public void onBindViewHolder(@NonNull ViajesViewHolder holder, int position) {
         Viaje viaje = viajeList.get(position);
-        holder.txtCupo.setText(String.valueOf(viaje.getEspaciosDisponibles()));
         holder.txtHora.setText(viaje.getHoraViaje());
         holder.txtFecha.setText(viaje.getFechaViaje());
         holder.txtDestino.setText(viaje.getDireccionDestino());
@@ -76,16 +65,32 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
         }else{
             holder.txtRol.setText("Pasajero");
         }
+        holder.btnSolicitudes.setVisibility(View.GONE);
         holder.verMas.setOnClickListener(e->{
-            context.startActivity(new Intent(context, ExpandViajeActivity.class));
+            Intent intent = new Intent(context, ExpandViajeActivity.class);
+            intent.putExtra("Destino", viaje.getDireccionDestino());
+            intent.putExtra("Salida", viaje.getDireccionSalida());
+            intent.putExtra("FechaSalida", viaje.getFechaViaje());
+            intent.putExtra("HoraSalida", viaje.getHoraViaje());
+            intent.putExtra("KeyConductor", viaje.getKeyConductor());
+            intent.putExtra("KeyViaje", viaje.getKey());
+            String[] pasajeros = new String[viaje.getKeysPasajeros().size()];
+            for(int i = 0; i < pasajeros.length; i++)
+                pasajeros[i] = viaje.getKeysPasajeros().get(i);
+            intent.putExtra("PasajerosKeys", pasajeros);
+            intent.putExtra("EspaciosDisponibles", viaje.getEspaciosDisponibles());
+            context.startActivity(intent);
         });
-        usuariosReference.addListenerForSingleValueEvent(new ValueEventListener() {
+        solicitudesReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot data : dataSnapshot.getChildren()){
-                    if(viaje.getKeyConductor().equals(data.getValue(User.class).getKey())){
-                        Log.e("user",data.getValue(User.class).getCorreo());
-                        imageLoader.displayImage(data.getValue(User.class).getImagenPerfil(),holder.perfil,options);
+                    SolicitudViaje solicitudViaje = data.getValue(SolicitudViaje.class);
+                    if(solicitudViaje.getKeyPasajero().equals(pref.getString("Key", null))){
+                        holder.btnSolicitudes.setVisibility(View.VISIBLE);
+                        holder.btnSolicitudes.setOnClickListener(e->{
+                            Toast.makeText(context, "LOL SOLICITUDES", Toast.LENGTH_LONG).show();
+                        });
                     }
                 }
             }
@@ -100,19 +105,17 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
     }
 
     public class ViajesViewHolder extends RecyclerView.ViewHolder {
-        public TextView txtSalida, txtDestino, txtCupo, txtFecha, txtHora, txtRol;
-        public Button verMas;
-        public CircularImageView perfil;
+        public TextView txtSalida, txtDestino, txtFecha, txtHora, txtRol;
+        public Button verMas, btnSolicitudes;
         public ViajesViewHolder(View itemView) {
             super(itemView);
-            txtCupo = itemView.findViewById(R.id.txtCupo);
             txtSalida = itemView.findViewById(R.id.txtSalida);
             txtDestino = itemView.findViewById(R.id.txtDestino);
             txtFecha = itemView.findViewById(R.id.txtFecha);
             txtHora = itemView.findViewById(R.id.txtHora);
             txtRol = itemView.findViewById(R.id.txtRol);
             verMas = itemView.findViewById(R.id.btnVerMas);
-            perfil = itemView.findViewById(R.id.img_perfil);
+            btnSolicitudes = itemView.findViewById(R.id.btnSolicitud);
         }
     }
 

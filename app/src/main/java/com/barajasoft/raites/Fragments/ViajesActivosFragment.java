@@ -46,18 +46,30 @@ public class ViajesActivosFragment extends BaseFragment {
     private ViajesAdapter viajesAdapter;
     private RecyclerView rvViajes;
     private OnPageChangeListener onPageChangeListener;
+    private SharedPreferences pref;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         viajesAdapter = new ViajesAdapter(getContext());
         viajesReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Viaje currentViaje = dataSnapshot.getValue(Viaje.class);
-                viajesAdapter.addViaje(currentViaje);
-                viajesAdapter.notifyDataSetChanged();
-                isViajesEmpty();
+                if(currentViaje.getKeyConductor().equals(pref.getString("Key", null))){
+                    viajesAdapter.addViaje(currentViaje);
+                    viajesAdapter.notifyDataSetChanged();
+                    isViajesEmpty();
+                }else{
+                    for(String pasajero : currentViaje.getKeysPasajeros()){
+                        if(pasajero.equals(pref.getString("Key", null))){
+                            viajesAdapter.addViaje(currentViaje);
+                            viajesAdapter.notifyDataSetChanged();
+                            isViajesEmpty();
+                        }
+                    }
+                }
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
@@ -118,6 +130,4 @@ public class ViajesActivosFragment extends BaseFragment {
     public void setListener(OnPageChangeListener listener){
         onPageChangeListener = listener;
     }
-
-
 }

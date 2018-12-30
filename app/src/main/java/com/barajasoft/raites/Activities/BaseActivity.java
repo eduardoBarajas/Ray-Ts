@@ -29,6 +29,7 @@ import com.barajasoft.raites.Fragments.MapFragment;
 import com.barajasoft.raites.Fragments.ViajesActivosFragment;
 import com.barajasoft.raites.Listeners.OnPageChangeListener;
 import com.barajasoft.raites.R;
+import com.barajasoft.raites.Utilities.LockableViewPager;
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
@@ -54,7 +55,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
     private NavigationView drawer;
     private NavigationView navItems;
     private BottomNavigationView bottomNavigation;
-    private ViewPager viewPager;
+    private LockableViewPager viewPager;
     private MenuItem prevMenuItem = null;
     private LinearLayout contentLayout;
     private OnPageChangeListener onPageChangeListener;
@@ -134,25 +135,12 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                     }
                 }
                 if(!found){
-                    clearVehiculoLocalData();
+                    deleteVehiculoSesion();
                 }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
-    }
-
-    private void clearVehiculoLocalData() {
-        editor.putString("matricula", "");
-        editor.putString("modelo", "");
-        editor.putString("marca", "");
-        editor.putInt("espaciosDisponibles", -1);
-        editor.putString("keyVehiculo", "");
-        editor.putString("keyUsuarioVehiculo", "");
-        editor.putString("imageVehiculoLink", "");
-        editor.putBoolean("vehiculoValidado", false);
-        editor.putBoolean("carAdded",false);
-        editor.commit();
     }
 
     protected void setVehiculoSesionData(Vehiculo sesion){
@@ -243,11 +231,14 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                 adapter.addFragment(new BuscarViajesFragment());
                 break;
             case "ExpandedViaje":
-                adapter.addFragment(new DetallesViajeFragment());
+                DetallesViajeFragment f2 = new DetallesViajeFragment();
+                f2.setListener(onPageChangeListener);
+                adapter.addFragment(f2);
                 adapter.addFragment(new MapFragment());
                 break;
         }
         viewPager.setAdapter(adapter);
+        viewPager.setSwipeable(false);
         /*
             Se agrego un on page listener, para que se pudiera hacer el cambio de los fragments segun la opcion
             seleccionada del bottomview.

@@ -113,6 +113,13 @@
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activities.SolicitudesViajeActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.SOLICITUDES_DE_VIAJES" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
 
         <meta-data
             android:name="preloaded_fonts"

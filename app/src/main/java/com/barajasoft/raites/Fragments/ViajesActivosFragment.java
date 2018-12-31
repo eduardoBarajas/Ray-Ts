@@ -57,13 +57,13 @@ public class ViajesActivosFragment extends BaseFragment {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 Viaje currentViaje = dataSnapshot.getValue(Viaje.class);
-                if(currentViaje.getKeyConductor().equals(pref.getString("Key", null))){
+                if(currentViaje.getKeyConductor().equals(pref.getString("key", null))){
                     viajesAdapter.addViaje(currentViaje);
                     viajesAdapter.notifyDataSetChanged();
                     isViajesEmpty();
                 }else{
                     for(String pasajero : currentViaje.getKeysPasajeros()){
-                        if(pasajero.equals(pref.getString("Key", null))){
+                        if(pasajero.equals(pref.getString("key", null))){
                             viajesAdapter.addViaje(currentViaje);
                             viajesAdapter.notifyDataSetChanged();
                             isViajesEmpty();

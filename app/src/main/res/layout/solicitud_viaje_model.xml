@@ -12,8 +12,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-        <ImageView
+        <com.mikhaellopez.circularimageview.CircularImageView
             android:id="@+id/imgPerfil"
+            android:layout_gravity="center"
+            android:layout_margin="8dp"
+            app:civ_border_color="#EEEEEE"
+            app:civ_border_width="4dp"
+            app:civ_shadow="true"
+            app:civ_shadow_color="#8BC34A"
+            app:civ_shadow_radius="10"
             android:layout_width="75dp"
             android:layout_height="75dp"
             android:layout_marginStart="8dp"

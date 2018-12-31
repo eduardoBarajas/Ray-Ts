@@ -152,7 +152,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback{
             solicitudViaje.setAceptada(false);
             solicitudViaje.setEspaciosSolicitados(pref.getInt("AsientosSolicitados", 0));
             solicitudViaje.setFechaSolicitud(simpleDateFormat.format(Calendar.getInstance().getTime()));
-            solicitudViaje.setKeyPasajero(pref.getString("Key", null));
+            solicitudViaje.setKeyPasajero(pref.getString("key", null));
             solicitudViaje.setPuntoDeParada(new LatLng(currentParada.latitude(), currentParada.longitude()));
             solicitudViaje.setKeyViaje(getActivity().getIntent().getStringExtra("KeyViaje"));
             solicitudViaje.setDireccionDeParada(direccion.toString());

@@ -2,6 +2,7 @@ package com.barajasoft.raites.Dialogs;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.support.annotation.NonNull;
@@ -13,8 +14,8 @@ import com.barajasoft.raites.R;
 
 public class OptionChooserDialog extends Dialog {
     private String optionSelected = "None";
-    public OptionChooserDialog(@NonNull Activity activity, String dlgTag, String titulo, String opc1, String opc2, ResultListener listener) {
-        super(activity);
+    public OptionChooserDialog(@NonNull Context context, String dlgTag, String titulo, String opc1, String opc2, ResultListener listener) {
+        super(context);
         setContentView(R.layout.option_chooser_dialog);
         TextView title = findViewById(R.id.title);
         Button btnConfirmar = findViewById(R.id.btnConfirmar);

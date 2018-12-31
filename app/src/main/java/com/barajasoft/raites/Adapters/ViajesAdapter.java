@@ -15,6 +15,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.barajasoft.raites.Activities.ExpandViajeActivity;
+import com.barajasoft.raites.Activities.SolicitudesViajeActivity;
+import com.barajasoft.raites.Dialogs.EstadoSolicitudDialog;
 import com.barajasoft.raites.Entities.SolicitudViaje;
 import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.Entities.Viaje;
@@ -37,6 +39,7 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
     private List<Viaje> viajeList = new LinkedList<>();
     private Context context;
     private SharedPreferences pref;
+    private SolicitudViaje solicitudActual;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference viajesReference = database.getReference("Viajes");
     private DatabaseReference usuariosReference = database.getReference("Usuarios");
@@ -84,14 +87,31 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
         solicitudesReference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                boolean found = false;
                 for(DataSnapshot data : dataSnapshot.getChildren()){
                     SolicitudViaje solicitudViaje = data.getValue(SolicitudViaje.class);
-                    if(solicitudViaje.getKeyPasajero().equals(pref.getString("Key", null))){
-                        holder.btnSolicitudes.setVisibility(View.VISIBLE);
-                        holder.btnSolicitudes.setOnClickListener(e->{
-                            Toast.makeText(context, "LOL SOLICITUDES", Toast.LENGTH_LONG).show();
-                        });
+                    if(solicitudViaje.getKeyViaje().equals(viaje.getKey())){
+                        solicitudActual = solicitudViaje;
+                        if(solicitudViaje.getKeyPasajero().equals(pref.getString("key", null))){
+                            holder.btnSolicitudes.setOnClickListener(e->{
+                                EstadoSolicitudDialog dlg = new EstadoSolicitudDialog(context, solicitudActual);
+                                dlg.show();
+                            });
+                        }
+                        if(viaje.getKeyConductor().equals(pref.getString("key", null))){
+                            holder.btnSolicitudes.setOnClickListener(e->{
+                                Intent intent = new Intent(context, SolicitudesViajeActivity.class);
+                                intent.putExtra("KeyViaje", viaje.getKey());
+                                context.startActivity(intent);
+                            });
+                        }
+                        found = true;
                     }
+                }
+                if(found){
+                    holder.btnSolicitudes.setVisibility(View.VISIBLE);
+                }else{
+                    holder.btnSolicitudes.setVisibility(View.GONE);
                 }
             }
             @Override

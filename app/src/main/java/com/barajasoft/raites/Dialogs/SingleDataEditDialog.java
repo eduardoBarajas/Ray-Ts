@@ -9,11 +9,11 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.barajasoft.raites.Listeners.DialogResultListener;
+import com.barajasoft.raites.Listeners.ResultListener;
 import com.barajasoft.raites.R;
 
 public class SingleDataEditDialog extends Dialog {
-    public SingleDataEditDialog(@NonNull Activity activity, String TAG, String titulo, String currentData, DialogResultListener listener) {
+    public SingleDataEditDialog(@NonNull Activity activity, String TAG, String titulo, String currentData, ResultListener listener) {
         super(activity);
         setContentView(R.layout.single_data_edit_dialog);
         TextView title = findViewById(R.id.title);
@@ -21,7 +21,7 @@ public class SingleDataEditDialog extends Dialog {
         Button btnConfirmar = findViewById(R.id.btnConfirmar);
         title.setText(titulo);
         dato.setText(currentData);
-        DialogResultListener innerListener = new DialogResultListener() {
+        ResultListener innerListener = new ResultListener() {
             @Override
             public void result(String dlgTag, Object result) {
                 if(dlgTag.equals("SioNoDialog")){

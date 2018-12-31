@@ -18,8 +18,9 @@ import android.widget.SpinnerAdapter;
 import android.widget.Toast;
 
 import com.barajasoft.raites.Dialogs.OptionChooserDialog;
-import com.barajasoft.raites.Listeners.DialogResultListener;
+import com.barajasoft.raites.Listeners.ResultListener;
 import com.barajasoft.raites.R;
+import com.barajasoft.raites.Utilities.MapUtilities;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -54,14 +55,14 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class MapActivity extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
-    private MapboxGeocoding mapboxGeocoding;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference ciudadesReference = database.getReference("Ciudades");
     private int RESULT_CODE = RESULT_CANCELED;
     private EditText txtBuscar;
     private Button btnBuscar, btnConfirmar;
     private Spinner ciudades;
-    private String ciudad, estado="B.C.", direccionInicio, direccionDestino, direccion;
+    private String direccion;
+    private String ciudad, estado="B.C.", direccionInicio, direccionDestino;
     private LatLng posicionInicio = null, posicionDestino = null, posicionActual = null;
     private final LatLngBounds BC_BOUNDS = new LatLngBounds.Builder()
             .include(new LatLng(32.506870, -117.148386))
@@ -78,16 +79,16 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
     private MapView mapView;
     private MapboxMap mapboxMap;
     private Marker markerInicio = null, markerDestino = null;
-    private DialogResultListener listener;
-    private DirectionsRoute currentRoute;
-    private static final String TAG = "Directions";
     private NavigationMapRoute navigationMapRoute;
     private ArrayAdapter<String> ciudadesData;
+    private MapUtilities mapUtilities;
+    private ResultListener listener;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //Mapbox Access token
         setContentView(R.layout.map_activity);
+        mapUtilities = new MapUtilities(getApplicationContext());
         btnBuscar = findViewById(R.id.btnBuscar);
         txtBuscar = findViewById(R.id.txtBuscar);
         btnConfirmar = findViewById(R.id.btnConfirmar);
@@ -113,33 +114,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
             InputMethodManager imm = (InputMethodManager) getApplicationContext().getSystemService(getApplicationContext().INPUT_METHOD_SERVICE);
             imm.hideSoftInputFromWindow(findViewById(android.R.id.content).getWindowToken(), 0);
             if(!txtBuscar.getText().toString().isEmpty()){
-                mapboxGeocoding = MapboxGeocoding.builder()
-                        .accessToken(getString(R.string.mapbox_access_token))
-                        .query(txtBuscar.getText().toString()+", "+ciudad+", "+estado)
-                        .autocomplete(true)
-                        .build();
-                mapboxGeocoding.enqueueCall(new Callback<GeocodingResponse>() {
-                    @Override
-                    public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
-                        if(response.body().features()!=null){
-                            List<CarmenFeature> results = response.body().features();
-                            if (results.size() > 0) {
-                                // Log the first results Point.
-                                Point firstResultPoint = results.get(0).center();
-                                moverCamara(new LatLng(firstResultPoint.latitude(),firstResultPoint.longitude()));
-                            }else{
-                                Log.e("error","No se encontro nada");
-                            }
-                        }else{
-                            Toast.makeText(getApplicationContext(),"No se encontro esa direccion",Toast.LENGTH_SHORT).show();
-                        }
-                    }
-
-                    @Override
-                    public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
-                        throwable.printStackTrace();
-                    }
-                });
+                mapUtilities.getDireccionPosition(txtBuscar.getText().toString(), ciudad, estado ,mapboxMap);
             }else{
                 Toast.makeText(getApplicationContext(),"Debes ingresar una direccion para buscar",Toast.LENGTH_SHORT).show();
             }
@@ -179,34 +154,37 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
 
          */
 
-        listener = new DialogResultListener() {
+        listener = new ResultListener() {
             @Override
             public void result(String dlgTag, Object result) {
+                if(dlgTag.equals("DireccionSelected")){
+                    direccion = (String) result;
+                }
                 if (dlgTag.equals("PointChooser")) {
                     if ((result).equals("Salida")) {
                         if(markerInicio != null)
                             mapboxMap.removeMarker(markerInicio);
                         posicionInicio = posicionActual;
-                        direccionInicio = direccion;
+                        direccionInicio = direccion.toString();
                         markerInicio = mapboxMap.addMarker(new MarkerOptions().position(posicionInicio)
-                                .title("Direccion Salida").snippet(direccion));
+                                .title("Direccion Salida").snippet(direccion.toString()));
                         if(posicionDestino != null){
                             // es por que ya se seleccionaron los dos
                             btnConfirmar.setVisibility(View.VISIBLE);
-                            getRuta(Point.fromLngLat(posicionInicio.getLongitude(),posicionInicio.getLatitude()), Point.fromLngLat(posicionDestino.getLongitude(),posicionDestino.getLatitude()));
+                            mapUtilities.getRuta(navigationMapRoute, Point.fromLngLat(posicionInicio.getLongitude(),posicionInicio.getLatitude()), Point.fromLngLat(posicionDestino.getLongitude(),posicionDestino.getLatitude()));
                         }
                     }
                     if ((result).equals("Destino")) {
                         if(markerDestino != null)
                             mapboxMap.removeMarker(markerDestino);
                         posicionDestino = posicionActual;
-                        direccionDestino = direccion;
+                        direccionDestino = direccion.toString();
                         markerDestino = mapboxMap.addMarker(new MarkerOptions().position(posicionDestino)
-                                .title("Direccion Destino").snippet(direccion));
+                                .title("Direccion Destino").snippet(direccion.toString()));
                         if(posicionInicio != null){
                             // es por que ya se seleccionaron los dos
                             btnConfirmar.setVisibility(View.VISIBLE);
-                            getRuta(Point.fromLngLat(posicionInicio.getLongitude(),posicionInicio.getLatitude()), Point.fromLngLat(posicionDestino.getLongitude(),posicionDestino.getLatitude()));
+                            mapUtilities.getRuta(navigationMapRoute, Point.fromLngLat(posicionInicio.getLongitude(),posicionInicio.getLatitude()), Point.fromLngLat(posicionDestino.getLongitude(),posicionDestino.getLatitude()));
                         }
                     }
                 }
@@ -219,12 +197,13 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
             public void onMapReady(MapboxMap mapboxMap) {
                 // Customize map with markers, polylines, etc.
                 MapActivity.this.mapboxMap = mapboxMap;
+                navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
                 mapboxMap.setLatLngBoundsForCameraTarget(BC_BOUNDS);
                 mapboxMap.setMaxZoomPreference(14);
                 mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(@NonNull LatLng point) {
-                        getDireccionName(point);
+                        mapUtilities.getDireccionName(point, listener);
                         posicionActual = point;
                         OptionChooserDialog dlg = new OptionChooserDialog(MapActivity.this, "PointChooser", "Selecciona Punto", "Salida", "Destino", listener);
                         dlg.setCanceledOnTouchOutside(false);
@@ -330,8 +309,6 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
     protected void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
-        if(mapboxGeocoding!=null)
-            mapboxGeocoding.cancelCall();
     }
 
     @Override
@@ -340,88 +317,14 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
         mapView.onSaveInstanceState(outState);
     }
 
-    private void moverCamara(LatLng posicion){
-        CameraPosition position = new CameraPosition.Builder()
-                .target(new LatLng(posicion.getLatitude(), posicion.getLongitude())) // Sets the new camera position
-                .zoom(18) // Sets the zoom
-                .bearing(180) // Rotate the camera
-                .tilt(30) // Set the camera tilt
-                .build(); // Creates a CameraPosition from the builder
-
-        mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(position), 4000);
-    }
-
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         ciudad = adapterView.getItemAtPosition(i).toString();
-        Log.e("CLICK","AQui "+ciudad);
     }
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
 
-    }
-
-    private void getDireccionName(LatLng point){
-        MapboxGeocoding reverseGeocode = MapboxGeocoding.builder()
-                .accessToken(getString(R.string.mapbox_access_token))
-                .query(Point.fromLngLat(point.getLongitude(), point.getLatitude()))
-                .geocodingTypes(GeocodingCriteria.TYPE_ADDRESS)
-                .build();
-        reverseGeocode.enqueueCall(new Callback<GeocodingResponse>() {
-            @Override
-            public void onResponse(Call<GeocodingResponse> call, Response<GeocodingResponse> response) {
-                if (response.body().features() != null) {
-                    if (response.body().features().size() > 0) {
-                       direccion = response.body().features().get(0).placeName();
-                    } else {
-                        Snackbar.make(getCurrentFocus(), "No se encontro una direccion para este lugar, prueba con otra", Snackbar.LENGTH_SHORT).show();
-                    }
-                } else {
-                    Log.e("error", "No se encontro nada");
-                }
-            }
-
-            @Override
-            public void onFailure(Call<GeocodingResponse> call, Throwable throwable) {
-                throwable.printStackTrace();
-            }
-        });
-    }
-
-    private void getRuta(Point origen, Point destino) {
-        NavigationRoute.builder(this)
-                .accessToken(getString(R.string.mapbox_access_token))
-                .origin(origen)
-                .destination(destino)
-                .build()
-                .getRoute(new Callback<DirectionsResponse>() {
-                    @Override
-                    public void onResponse(Call<DirectionsResponse> call, retrofit2.Response<DirectionsResponse> response) {
-                        // You can get the generic HTTP info about the response
-                        Log.d(TAG, "Response code: " + response.code());
-                        if (response.body() == null) {
-                            Log.e(TAG, "No routes found, make sure you set the right user and access token.");
-                            return;
-                        } else if (response.body().routes().size() < 1) {
-                            Log.e(TAG, "No routes found");
-                            return;
-                        }
-                        currentRoute = response.body().routes().get(0);
-                        // Draw the route on the map
-                        if (navigationMapRoute != null) {
-                            navigationMapRoute.removeRoute();
-                        } else {
-                            navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
-                        }
-                        navigationMapRoute.addRoute(currentRoute);
-                    }
-
-                    @Override
-                    public void onFailure(Call<DirectionsResponse> call, Throwable throwable) {
-                        Log.e(TAG, "Error: " + throwable.getMessage());
-                    }
-                });
     }
 
     @Override

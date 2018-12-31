@@ -8,12 +8,12 @@ import android.support.annotation.NonNull;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.barajasoft.raites.Listeners.DialogResultListener;
+import com.barajasoft.raites.Listeners.ResultListener;
 import com.barajasoft.raites.R;
 
 public class OptionChooserDialog extends Dialog {
     private String optionSelected = "None";
-    public OptionChooserDialog(@NonNull Activity activity, String dlgTag, String titulo, String opc1, String opc2, DialogResultListener listener) {
+    public OptionChooserDialog(@NonNull Activity activity, String dlgTag, String titulo, String opc1, String opc2, ResultListener listener) {
         super(activity);
         setContentView(R.layout.option_chooser_dialog);
         TextView title = findViewById(R.id.title);

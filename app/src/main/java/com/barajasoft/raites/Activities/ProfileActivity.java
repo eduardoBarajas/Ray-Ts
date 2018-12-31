@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 import com.barajasoft.raites.Dialogs.OptionChooserDialog;
 import com.barajasoft.raites.Dialogs.SingleDataEditDialog;
-import com.barajasoft.raites.Listeners.DialogResultListener;
+import com.barajasoft.raites.Listeners.ResultListener;
 import com.barajasoft.raites.R;
 import com.barajasoft.raites.Utilities.ImageAngleCorrector;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -50,7 +50,7 @@ public class ProfileActivity extends BaseActivity {
     private Uri imageDir;
     private boolean imageSelected = false;
     private DisplayImageOptions options;
-    private DialogResultListener dialogResultListener;
+    private ResultListener resultListener;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference referencia = database.getReference("Usuarios");
     private ImageView profile;
@@ -101,7 +101,7 @@ public class ProfileActivity extends BaseActivity {
         email.setText(pref.getString("correo",null));
         phone.setText(pref.getString("telefono",null));
         imageLoader.displayImage(pref.getString("linkPerfil",null),profile,options);
-        dialogResultListener = new DialogResultListener() {
+        resultListener = new ResultListener() {
             @Override
             public void result(String dlgTag, Object result) {
                 if(dlgTag.equals("EditarEdadDlg")&&!((String)result).isEmpty()){
@@ -123,19 +123,19 @@ public class ProfileActivity extends BaseActivity {
             }
         };
         editAge.setOnClickListener(e->{
-            SingleDataEditDialog dlg = new SingleDataEditDialog(ProfileActivity.this,"EditarEdadDlg","Editar Edad",age.getText().toString(),dialogResultListener);
+            SingleDataEditDialog dlg = new SingleDataEditDialog(ProfileActivity.this,"EditarEdadDlg","Editar Edad",age.getText().toString(), resultListener);
             dlg.show();
         });
         editName.setOnClickListener(e->{
-            SingleDataEditDialog dlg = new SingleDataEditDialog(ProfileActivity.this,"EditarNombreDlg","Editar Nombre",name.getText().toString(),dialogResultListener);
+            SingleDataEditDialog dlg = new SingleDataEditDialog(ProfileActivity.this,"EditarNombreDlg","Editar Nombre",name.getText().toString(), resultListener);
             dlg.show();
         });
         editPhone.setOnClickListener(e->{
-            SingleDataEditDialog dlg = new SingleDataEditDialog(ProfileActivity.this,"EditarTelefonoDlg","Editar Telefono",phone.getText().toString(),dialogResultListener);
+            SingleDataEditDialog dlg = new SingleDataEditDialog(ProfileActivity.this,"EditarTelefonoDlg","Editar Telefono",phone.getText().toString(), resultListener);
             dlg.show();
         });
         editSex.setOnClickListener(e->{
-            OptionChooserDialog dlg = new OptionChooserDialog(ProfileActivity.this,"EditarSexoDlg","Elige el sexo","Hombre","Mujer",dialogResultListener);
+            OptionChooserDialog dlg = new OptionChooserDialog(ProfileActivity.this,"EditarSexoDlg","Elige el sexo","Hombre","Mujer", resultListener);
             dlg.show();
         });
         addContent(layout);

@@ -23,7 +23,7 @@ import android.widget.Toast;
 import com.barajasoft.raites.Dialogs.AlertDialog;
 import com.barajasoft.raites.Dialogs.OptionChooserDialog;
 import com.barajasoft.raites.Dialogs.SingleDataEditDialog;
-import com.barajasoft.raites.Listeners.DialogResultListener;
+import com.barajasoft.raites.Listeners.ResultListener;
 import com.barajasoft.raites.R;
 import com.barajasoft.raites.Utilities.ImageAngleCorrector;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -93,7 +93,7 @@ public class MiVehiculoActivity extends BaseActivity {
         carImage = layout.findViewById(R.id.carImage);
         FloatingActionButton btnCarImage = layout.findViewById(R.id.carImageButton);
         Button btnEliminar = layout.findViewById(R.id.btnEliminarVehiculo);
-        DialogResultListener listener = new DialogResultListener() {
+        ResultListener listener = new ResultListener() {
             @Override
             public void result(String dlgTag, Object result) {
                 switch (dlgTag){

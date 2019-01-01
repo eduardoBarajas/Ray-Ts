@@ -153,6 +153,15 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
             viajeList.remove(eliminar);
     }
 
+    public void modifyViaje(Viaje viaje){
+        for(Viaje v : viajeList){
+            if(v.getKey().equals(viaje.getKey())){
+                viajeList.set(viajeList.indexOf(v), viaje);
+                break;
+            }
+        }
+    }
+
     public void clear(){
         viajeList.clear();
     }

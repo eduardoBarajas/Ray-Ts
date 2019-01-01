@@ -10,6 +10,7 @@ import android.support.v7.widget.CardView;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,8 +22,10 @@ import android.widget.Toast;
 
 import com.barajasoft.raites.Adapters.ViajesAdapter;
 import com.barajasoft.raites.Entities.User;
+import com.barajasoft.raites.Entities.Vehiculo;
 import com.barajasoft.raites.Entities.Viaje;
 import com.barajasoft.raites.Listeners.OnPageChangeListener;
+import com.barajasoft.raites.Listeners.Update;
 import com.barajasoft.raites.R;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -35,9 +38,12 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import static com.mapbox.mapboxsdk.Mapbox.getApplicationContext;
 
-public class ViajesActivosFragment extends BaseFragment {
+public class ViajesActivosFragment extends BaseFragment{
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference viajesReference = database.getReference("Viajes");
     private Button btnAgendarViaje;
@@ -46,6 +52,7 @@ public class ViajesActivosFragment extends BaseFragment {
     private ViajesAdapter viajesAdapter;
     private RecyclerView rvViajes;
     private OnPageChangeListener onPageChangeListener;
+    private boolean viewAvaible = false;
     private SharedPreferences pref;
 
     @Override
@@ -73,7 +80,20 @@ public class ViajesActivosFragment extends BaseFragment {
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-
+                Viaje currentViaje = dataSnapshot.getValue(Viaje.class);
+                if(currentViaje.getKeyConductor().equals(pref.getString("key", null))){
+                    viajesAdapter.modifyViaje(currentViaje);
+                    viajesAdapter.notifyDataSetChanged();
+                    isViajesEmpty();
+                }else{
+                    for(String pasajero : currentViaje.getKeysPasajeros()){
+                        if(pasajero.equals(pref.getString("key", null))){
+                            viajesAdapter.modifyViaje(currentViaje);
+                            viajesAdapter.notifyDataSetChanged();
+                            isViajesEmpty();
+                        }
+                    }
+                }
             }
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
@@ -98,6 +118,7 @@ public class ViajesActivosFragment extends BaseFragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        viewAvaible = true;
         btnAgendarViaje = view.findViewById(R.id.btnNoViajes);
         imageNoViajes = view.findViewById(R.id.imageNoViajes);
         txtNoViajes = view.findViewById(R.id.textNoViajes);
@@ -111,6 +132,7 @@ public class ViajesActivosFragment extends BaseFragment {
         btnAgendarViaje.setOnClickListener(e->{
             onPageChangeListener.pageChanged(1);
         });
+
     }
 
     private void isViajesEmpty() {
@@ -127,7 +149,14 @@ public class ViajesActivosFragment extends BaseFragment {
         }
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        viewAvaible = false;
+    }
+
     public void setListener(OnPageChangeListener listener){
         onPageChangeListener = listener;
     }
+
 }

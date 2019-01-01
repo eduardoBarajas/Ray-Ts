@@ -16,4 +16,9 @@ public class MainMenuActivity extends BaseActivity {
         initViewPager("MainMenu");
         setToolbar("","Inicio");
     }
+
+    @Override
+    protected void update() {
+        super.update();
+    }
 }

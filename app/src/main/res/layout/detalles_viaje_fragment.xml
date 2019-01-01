@@ -480,12 +480,13 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:background="@drawable/button_round_green"
+                android:background="@drawable/button_round"
                 android:backgroundTint="@color/mapbox_navigation_route_alternative_shield_color"
                 android:text="Agendar Viaje Completo"
                 android:textColor="@color/cardview_light_background" />
 
             <TextView
+                android:id="@+id/lblParadas"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="8dp"
@@ -501,7 +502,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="64dp"
-                android:background="@drawable/button_round_green"
+                android:background="@drawable/button_round"
                 android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
                 android:text="Solicitar Parada"
                 android:textColor="@color/cardview_light_background" />

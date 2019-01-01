@@ -43,6 +43,8 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Observable;
+import java.util.Observer;
 
 import static android.view.KeyEvent.KEYCODE_BACK;
 
@@ -66,6 +68,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference usuariosReference = database.getReference("Usuarios");
     private DatabaseReference vehiculosReference = database.getReference("Vehiculos");
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +91,7 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
 
         pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
         editor = pref.edit();
+
         usuariosReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) { }

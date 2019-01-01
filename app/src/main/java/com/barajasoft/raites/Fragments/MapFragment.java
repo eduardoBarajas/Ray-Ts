@@ -172,7 +172,7 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback{
         if(navigationMapRoute==null)
             navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
         mapboxMap.setLatLngBoundsForCameraTarget(BC_BOUNDS);
-        mapboxMap.setMaxZoomPreference(14);
+        //mapboxMap.setMaxZoomPreference(14);
         mapboxMap.animateCamera(CameraUpdateFactory.newCameraPosition(
                 mapUtilities.moverCamara(new LatLng(inicio.latitude(), inicio.longitude()))), 4000);
         mapUtilities.getRuta(navigationMapRoute, inicio, destino);

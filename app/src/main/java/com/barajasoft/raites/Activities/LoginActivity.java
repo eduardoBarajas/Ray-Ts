@@ -54,7 +54,7 @@ public class LoginActivity extends BaseActivity {
         disableBottomMenu();
         disableDrawer();
         disableViewPager();
-        setToolbar("#0277BD","Login");
+        setToolbar("","Login");
         View layout = LayoutInflater.from(this).inflate(R.layout.login_activity,null);
         TextInputEditText user, pass;
         user = layout.findViewById(R.id.txtEmail);

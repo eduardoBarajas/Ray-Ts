@@ -280,6 +280,8 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
         return super.onOptionsItemSelected(item);
     }
 
+    protected void openDrawer(){drawerLayout.openDrawer(GravityCompat.START);}
+
     public boolean onKeyDown(int keyCode, KeyEvent event){
         //si se recibe una tecla se limpia la pantalla
         super.onKeyDown(keyCode,event);
@@ -447,6 +449,11 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
         if(!color.isEmpty())
             toolbar.setBackgroundColor(Color.parseColor(color));
         toolbar.setSubtitle(label);
+    }
+
+    protected  void setToolbarTitle(String title, String sub){
+        toolbar.setTitle(title);
+        toolbar.setSubtitle(sub);
     }
 
     protected void disableToolbar(){

@@ -9,10 +9,18 @@ import android.os.Environment;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.TextInputEditText;
+import android.support.v4.view.GravityCompat;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -20,6 +28,7 @@ import android.widget.Toast;
 
 import com.barajasoft.raites.Dialogs.OptionChooserDialog;
 import com.barajasoft.raites.Dialogs.SingleDataEditDialog;
+import com.barajasoft.raites.Dialogs.YesOrNoChooserDialog;
 import com.barajasoft.raites.Listeners.ResultListener;
 import com.barajasoft.raites.R;
 import com.barajasoft.raites.Utilities.ImageAngleCorrector;
@@ -56,6 +65,10 @@ public class ProfileActivity extends BaseActivity {
     private ImageView profile;
     private SharedPreferences pref;
     private TextView name, age, sex, email, phone;
+    private TextInputEditText editName, editAge, editPhone;
+    private AutoCompleteTextView editSex;
+    private Button btnGuardar;
+    private boolean editMode = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,20 +89,22 @@ public class ProfileActivity extends BaseActivity {
         disableViewPager();
         initDrawer();
         setNavViewMenu("perfil");
-        setToolbar("","Mi Perfil");
+        setToolbarTitle("Mi perfil", "");
         View layout = LayoutInflater.from(this).inflate(R.layout.profile_activity,null);
-        ImageView editName, editAge, editSex, editEmail, editPhone;
-        editName = layout.findViewById(R.id.editName);
-        editAge = layout.findViewById(R.id.editAge);
-        editSex = layout.findViewById(R.id.editSex);
-        editPhone = layout.findViewById(R.id.editTelefono);
         name = layout.findViewById(R.id.txtName);
         age = layout.findViewById(R.id.txtAge);
         sex = layout.findViewById(R.id.txtSexo);
         email = layout.findViewById(R.id.txtEmail);
         phone = layout.findViewById(R.id.txtTelefono);
         profile = layout.findViewById(R.id.profile);
+        btnGuardar = layout.findViewById(R.id.btnGuardar);
+        editAge = layout.findViewById(R.id.editAge);
+        editName = layout.findViewById(R.id.editName);
+        editPhone = layout.findViewById(R.id.editTelefono);
+        editSex = layout.findViewById(R.id.editSexo);
         FloatingActionButton btnChangeProfile = layout.findViewById(R.id.btnChangeProfile);
+        ArrayAdapter adapterGeneros = new ArrayAdapter<>(this, android.R.layout.simple_dropdown_item_1line, new String[]{"Hombre", "Mujer"});
+        editSex.setAdapter(adapterGeneros);
         btnChangeProfile.setOnClickListener(e->{
             Intent intent = new Intent( Intent.ACTION_GET_CONTENT );
             intent.setType( "image/*" );
@@ -104,42 +119,58 @@ public class ProfileActivity extends BaseActivity {
         resultListener = new ResultListener() {
             @Override
             public void result(String dlgTag, Object result) {
-                if(dlgTag.equals("EditarEdadDlg")&&!((String)result).isEmpty()){
-                    age.setText((String)result);
-                    updateFieldInFirebase("edad",result,true);
-                }
-                if(dlgTag.equals("EditarNombreDlg")&&!((String)result).isEmpty()){
-                    name.setText((String)result);
-                    updateFieldInFirebase("nombre",result,false);
-                }
-                if(dlgTag.equals("EditarTelefonoDlg")&&!((String)result).isEmpty()){
-                    phone.setText((String)result);
-                    updateFieldInFirebase("telefono",result,false);
-                }
-                if(dlgTag.equals("EditarSexoDlg")){
-                    sex.setText((String)result);
-                    updateFieldInFirebase("sexo",result,false);
+                if(dlgTag.equals("EditarPerfil")&&((String)result).equals("Accept")){
+                    age.setText(editAge.getText().toString());
+                    phone.setText(editPhone.getText().toString());
+                    sex.setText(editSex.getText().toString());
+                    name.setText(editName.getText().toString());
+                    Map<String, Object> datosActualizados = new HashMap<>();
+                    datosActualizados.put("telefono", editPhone.getText().toString());
+                    datosActualizados.put("sexo", editSex.getText().toString());
+                    datosActualizados.put("nombre", editName.getText().toString());
+                    datosActualizados.put("edad", Integer.parseInt(editAge.getText().toString()));
+                    updateInFirebase(datosActualizados);
+                    convertViewToEditable(false);
+                    editMode = false;
                 }
             }
         };
-        editAge.setOnClickListener(e->{
-            SingleDataEditDialog dlg = new SingleDataEditDialog(ProfileActivity.this,"EditarEdadDlg","Editar Edad",age.getText().toString(), resultListener);
-            dlg.show();
-        });
-        editName.setOnClickListener(e->{
-            SingleDataEditDialog dlg = new SingleDataEditDialog(ProfileActivity.this,"EditarNombreDlg","Editar Nombre",name.getText().toString(), resultListener);
-            dlg.show();
-        });
-        editPhone.setOnClickListener(e->{
-            SingleDataEditDialog dlg = new SingleDataEditDialog(ProfileActivity.this,"EditarTelefonoDlg","Editar Telefono",phone.getText().toString(), resultListener);
-            dlg.show();
-        });
-        editSex.setOnClickListener(e->{
-            OptionChooserDialog dlg = new OptionChooserDialog(ProfileActivity.this,"EditarSexoDlg","Elige el sexo","Hombre","Mujer", resultListener);
+        btnGuardar.setOnClickListener(e->{
+            YesOrNoChooserDialog dlg = new YesOrNoChooserDialog(ProfileActivity.this,"EditarPerfil","Guardar Cambios?","Estas seguro"
+                    +" de guardar los cambios, recuerda que esto afectara a todos tus viajes que hayas publicado", resultListener);
             dlg.show();
         });
         addContent(layout);
     }
+
+    private void convertViewToEditable(boolean editable){
+        if(editable){
+            editName.setText(name.getText());
+            editAge.setText(age.getText());
+            editPhone.setText(phone.getText());
+            editSex.setText(sex.getText());
+            name.setVisibility(View.GONE);
+            age.setVisibility(View.GONE);
+            phone.setVisibility(View.GONE);
+            sex.setVisibility(View.GONE);
+            btnGuardar.setVisibility(View.VISIBLE);
+            editSex.setVisibility(View.VISIBLE);
+            editPhone.setVisibility(View.VISIBLE);
+            editName.setVisibility(View.VISIBLE);
+            editAge.setVisibility(View.VISIBLE);
+        }else{
+            name.setVisibility(View.VISIBLE);
+            age.setVisibility(View.VISIBLE);
+            phone.setVisibility(View.VISIBLE);
+            sex.setVisibility(View.VISIBLE);
+            btnGuardar.setVisibility(View.GONE);
+            editSex.setVisibility(View.GONE);
+            editPhone.setVisibility(View.GONE);
+            editName.setVisibility(View.GONE);
+            editAge.setVisibility(View.GONE);
+        }
+    }
+
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if(requestCode == PICK_IMAGE && resultCode == RESULT_OK){
@@ -193,13 +224,8 @@ public class ProfileActivity extends BaseActivity {
         super.onActivityResult(requestCode, resultCode, data);
     }
 
-    private void updateFieldInFirebase(String field, Object data, boolean isNumber){
-        Map<String,Object> dato = new HashMap<>();
-        if(isNumber)
-            dato.put(field,Integer.parseInt(data.toString()));
-        else
-            dato.put(field,data);
-        referencia.child(pref.getString("key",null)).updateChildren(dato, new DatabaseReference.CompletionListener() {
+    private void updateInFirebase(Map<String, Object> datos){
+        referencia.child(pref.getString("key",null)).updateChildren(datos, new DatabaseReference.CompletionListener() {
             @Override
             public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
                 Toast.makeText(getApplicationContext(),"Cambio realizado con exito",Toast.LENGTH_SHORT).show();
@@ -219,5 +245,40 @@ public class ProfileActivity extends BaseActivity {
         age.setText(String.valueOf(pref.getInt("edad",-1)));
         phone.setText(pref.getString("telefono", null));
         imageLoader.displayImage(pref.getString("linkPerfil",null), profile, options);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.toolbar_editar_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_editar) {
+            if(!editMode){
+                convertViewToEditable(true);
+                editMode = true;
+                setToolbarTitle("Mi perfil", "(Editando Informacion)");
+            }else{
+                convertViewToEditable(false);
+                editMode = false;
+                setToolbarTitle("Mi perfil", "");
+            }
+            return true;
+        }
+        if(id == R.id.home){
+            openDrawer();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
     }
 }

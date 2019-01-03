@@ -124,12 +124,12 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback{
                         if (data.getValue(Viaje.class).getKeyConductor().equals(getActivity().getIntent().getStringExtra("KeyConductor"))) {
                             viajeActual = data.getValue(Viaje.class);
                         }
-                        inicio = Point.fromLngLat(viajeActual.getPuntosDeViaje().get(0).getLongitude(), viajeActual.getPuntosDeViaje().get(0).getLatitude());
-                        destino = Point.fromLngLat(viajeActual.getPuntosDeViaje().get(1).getLongitude(), viajeActual.getPuntosDeViaje().get(1).getLatitude());
-                        mapView.onCreate(savedInstanceState);
-                        mapView.setStyleUrl(Style.MAPBOX_STREETS);
-                        mapView.getMapAsync(MapFragment.this);
                     }
+                    inicio = Point.fromLngLat(viajeActual.getPuntosDeViaje().get(0).getLongitude(), viajeActual.getPuntosDeViaje().get(0).getLatitude());
+                    destino = Point.fromLngLat(viajeActual.getPuntosDeViaje().get(1).getLongitude(), viajeActual.getPuntosDeViaje().get(1).getLatitude());
+                    mapView.onCreate(savedInstanceState);
+                    mapView.setStyleUrl(Style.MAPBOX_STREETS);
+                    mapView.getMapAsync(MapFragment.this);
                 }
 
                 @Override

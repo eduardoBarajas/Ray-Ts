@@ -107,8 +107,9 @@ public class BuscarViajesFragment extends BaseFragment {
     private void buscarViajes() {
         if(desde.isEmpty()&&hasta.isEmpty()){
             rvViajes.setVisibility(View.GONE);
-            imageNoViajes.setVisibility(View.GONE);
-            txtNoViajes.setVisibility(View.GONE);
+            txtNoViajes.setText("Selecciona desde donde comienza o hasta donde va el viaje para ver si se encuentran disponibles");
+            imageNoViajes.setVisibility(View.VISIBLE);
+            txtNoViajes.setVisibility(View.VISIBLE);
            return;
         }
         viajesReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -147,6 +148,7 @@ public class BuscarViajesFragment extends BaseFragment {
             rvViajes.setVisibility(View.GONE);
             imageNoViajes.setVisibility(View.VISIBLE);
             txtNoViajes.setVisibility(View.VISIBLE);
+            txtNoViajes.setText("No se encontraron viajes para esta trayectoria.");
         }else{
             rvViajes.setVisibility(View.VISIBLE);
             imageNoViajes.setVisibility(View.GONE);

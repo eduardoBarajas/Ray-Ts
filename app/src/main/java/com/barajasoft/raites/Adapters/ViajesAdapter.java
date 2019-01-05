@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.constraint.ConstraintLayout;
+import android.support.constraint.ConstraintSet;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,10 +61,21 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
     @Override
     public void onBindViewHolder(@NonNull ViajesViewHolder holder, int position) {
         Viaje viaje = viajeList.get(position);
-        holder.txtHora.setText(viaje.getHoraViaje());
+        //para ajustar un contraint dinamicamente
+        ConstraintSet constraintSet = new ConstraintSet();
+        constraintSet.clone(holder.rootConstraint);
+        if(viaje.getDireccionDestino().length() > viaje.getDireccionSalida().length())
+            constraintSet.connect(holder.divisorCard.getId(), ConstraintSet.TOP, holder.txtDestino.getId(), ConstraintSet.BOTTOM,8);
+        else
+            constraintSet.connect(holder.divisorCard.getId(), ConstraintSet.TOP, holder.txtSalida .getId(), ConstraintSet.BOTTOM,8);
+        constraintSet.applyTo(holder.rootConstraint);
+        holder.txtEspacios.setText(String.valueOf(viaje.getEspaciosDisponibles()));
+        holder.txtHora.setText("Sale a la(s) "+viaje.getHoraViaje());
         holder.txtFecha.setText(viaje.getFechaViaje());
-        holder.txtDestino.setText(viaje.getDireccionDestino());
-        holder.txtSalida.setText(viaje.getDireccionSalida());
+        holder.txtSalidaHeader.setText(viaje.getDireccionSalida().split(",")[1].substring(1, 4));
+        holder.txtDestinoHeader.setText(viaje.getDireccionDestino().split(",")[1].substring(1, 4));
+        holder.txtDestino.setText(viaje.getDireccionDestino().split(",")[0]);
+        holder.txtSalida.setText(viaje.getDireccionSalida().split(",")[0]);
         if(pref.getString("key", null).equals(viaje.getKeyConductor())){
             holder.txtRol.setText("Conductor");
         }else{
@@ -125,10 +138,16 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
     }
 
     public class ViajesViewHolder extends RecyclerView.ViewHolder {
-        public TextView txtSalida, txtDestino, txtFecha, txtHora, txtRol;
+        public TextView txtSalidaHeader, txtSalida , txtDestino, txtDestinoHeader, txtFecha, txtHora, txtRol, txtEspacios;
         public Button verMas, btnSolicitudes;
+        public ConstraintLayout rootConstraint;
+        public View divisorCard;
         public ViajesViewHolder(View itemView) {
             super(itemView);
+            divisorCard = itemView.findViewById(R.id.divisorCard);
+            rootConstraint = itemView.findViewById(R.id.rootConstraint);
+            txtSalidaHeader = itemView.findViewById(R.id.txtSalidaHeader);
+            txtDestinoHeader = itemView.findViewById(R.id.txtDestinoHeader);
             txtSalida = itemView.findViewById(R.id.txtSalida);
             txtDestino = itemView.findViewById(R.id.txtDestino);
             txtFecha = itemView.findViewById(R.id.txtFecha);
@@ -136,6 +155,7 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
             txtRol = itemView.findViewById(R.id.txtRol);
             verMas = itemView.findViewById(R.id.btnVerMas);
             btnSolicitudes = itemView.findViewById(R.id.btnSolicitud);
+            txtEspacios = itemView.findViewById(R.id.txtEspacios);
         }
     }
 

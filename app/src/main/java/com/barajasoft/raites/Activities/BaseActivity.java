@@ -49,8 +49,8 @@ import java.util.Observer;
 import static android.view.KeyEvent.KEYCODE_BACK;
 
 public class BaseActivity extends AppCompatActivity implements OnPageChangeListener {
-    protected static final int PICK_IMAGE = 765;
-    protected static final int PICK_DIRECCION = 123;
+    public static final int PICK_IMAGE = 765;
+    public static final int PICK_DIRECCION = 123;
     private GoogleSignInClient googleSignInClient;
     private FirebaseAuth auth;
     private DrawerLayout drawerLayout;
@@ -258,6 +258,12 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                     bottomNavigation.getMenu().getItem(0).setChecked(false);
                 bottomNavigation.getMenu().getItem(position).setChecked(true);
                 prevMenuItem = bottomNavigation.getMenu().getItem(position);
+                switch (bottomNavigation.getMenu().getItem(position).getTitle().toString()){
+                    case "Buscar Viajes": setToolbarTitle("Raites", "Buscador De Viajes");break;
+                    case "Viajes Activos": setToolbarTitle("Raites", "Mis Viajes Activos");break;
+                    case "Ruta Actual": setToolbarTitle("Detalles Raite", "Ruta Actual");break;
+                    case "Viaje Actual": setToolbarTitle("Detalles Raite", "Viaje");break;
+                }
             }
             @Override
             public void onPageScrollStateChanged(int state) { }

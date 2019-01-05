@@ -7,4 +7,9 @@
     <color name="coolBlue">#0277BD</color>
     <color name="coolGray">#EEEEEE</color>
     <color name="amber">#FFC107</color>
+    <color name="opaqueGreen">#E633691E</color>
+    <color name="opaqueIndigo">#E6303F9F</color>
+    <color name="opaqueOrange">#E6F57F17</color>
+    <color name="opaqueGray">#E6607D8B</color>
+    <color name="opaqueRed">#E6f44336</color>
 </resources>

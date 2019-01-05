@@ -28,9 +28,12 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="8dp"
-                android:fontFamily="@font/roboto"
+                android:fontFamily="@font/roboto_thin"
                 android:text="No se ha definido aun un Auto, agrega uno para tener la posibilidad de agendar viajes como conductor"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:textColor="@color/common_google_signin_btn_text_light_pressed"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
             <Button
                 android:id="@+id/btnAgregarAuto"
@@ -62,8 +65,8 @@
 
                 <com.mikhaellopez.circularimageview.CircularImageView
                     android:id="@+id/carImage"
-                    android:layout_width="150dp"
-                    android:layout_height="150dp"
+                    android:layout_width="175dp"
+                    android:layout_height="175dp"
                     android:layout_gravity="center|top"
                     android:layout_marginTop="8dp"
                     android:layout_weight="1"
@@ -115,10 +118,11 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="24dp"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/roboto_thin"
                     android:text="Marca"
                     android:textColor="@color/colorAccent"
                     android:textSize="24sp"
+                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
@@ -128,7 +132,9 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_margin="8dp"
+                    android:fontFamily="@font/roboto_thin"
                     android:text="No Definido"
+                    android:textColor="@color/common_google_signin_btn_text_light_pressed"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@+id/textView3"
                     app:layout_constraintTop_toBottomOf="@+id/textView3" />
@@ -152,10 +158,11 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="124dp"
                     android:layout_marginTop="8dp"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/roboto_thin"
                     android:text="Modelo"
                     android:textColor="@color/colorAccent"
                     android:textSize="24sp"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/textView3"
                     app:layout_constraintStart_toEndOf="@+id/textView3"
                     app:layout_constraintTop_toTopOf="@+id/textView3"
@@ -168,6 +175,8 @@
                     android:layout_gravity="center"
                     android:layout_marginStart="8dp"
                     android:layout_marginTop="8dp"
+                    android:fontFamily="@font/roboto_thin"
+                    android:textColor="@color/common_google_signin_btn_text_light_pressed"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@+id/textView6"
                     app:layout_constraintTop_toBottomOf="@+id/textView6"
@@ -191,10 +200,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="64dp"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/roboto_thin"
                     android:text="Matricula"
                     android:textColor="@color/colorAccent"
                     android:textSize="24sp"
+                    android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="@+id/textView3"
                     app:layout_constraintTop_toBottomOf="@+id/textView3" />
 
@@ -204,7 +214,9 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_margin="8dp"
+                    android:fontFamily="@font/roboto_thin"
                     android:text="No Definido"
+                    android:textColor="@color/common_google_signin_btn_text_light_pressed"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@+id/textView7"
                     app:layout_constraintTop_toBottomOf="@+id/textView7" />
@@ -227,10 +239,11 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
                     android:layout_marginTop="64dp"
-                    android:fontFamily="@font/roboto"
+                    android:fontFamily="@font/roboto_thin"
                     android:text="Espacios"
                     android:textColor="@color/colorAccent"
                     android:textSize="24sp"
+                    android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="@+id/textView7"
                     app:layout_constraintStart_toStartOf="@+id/textView6"
                     app:layout_constraintTop_toBottomOf="@+id/textView6" />
@@ -241,7 +254,9 @@
                     android:layout_height="match_parent"
                     android:layout_gravity="center"
                     android:layout_margin="8dp"
+                    android:fontFamily="@font/roboto_thin"
                     android:text="No Definido"
+                    android:textColor="@color/common_google_signin_btn_text_light_pressed"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="@+id/textView9"
                     app:layout_constraintTop_toBottomOf="@+id/textView9" />

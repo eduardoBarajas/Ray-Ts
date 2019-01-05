@@ -2,233 +2,234 @@ package com.barajasoft.raites.Activities;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.ColorStateList;
-import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputEditText;
 import android.support.v4.view.ViewPager;
+import android.util.DisplayMetrics;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.Button;
-import android.widget.DatePicker;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.TimePicker;
-import android.widget.Toast;
 
 import com.barajasoft.raites.Adapters.ViewPagerAdapter;
-import com.barajasoft.raites.Entities.Viaje;
-import com.barajasoft.raites.Fragments.MapFragment;
+import com.barajasoft.raites.Fragments.ConfirmarViajeFragment;
+import com.barajasoft.raites.Fragments.DefinirFechaViajeFragment;
+import com.barajasoft.raites.Fragments.DefinirHoraViajeFragment;
+import com.barajasoft.raites.Fragments.DefinirTipoViajeFragment;
+import com.barajasoft.raites.Fragments.DefinirTrayectoFragment;
+import com.barajasoft.raites.Listeners.OnPageChangeListener;
 import com.barajasoft.raites.R;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.ValueEventListener;
-import com.mapbox.mapboxsdk.camera.CameraPosition;
-import com.mapbox.mapboxsdk.camera.CameraUpdateFactory;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.geometry.LatLngBounds;
-import com.mapbox.mapboxsdk.maps.MapView;
-import com.mapbox.mapboxsdk.maps.MapboxMap;
-import com.mapbox.mapboxsdk.maps.OnMapReadyCallback;
+import com.barajasoft.raites.Utilities.LockableViewPager;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.TimeZone;
-
-public class PublicarViajeActivity extends BaseActivity{
-    private TextView direccionSalida, direccionDestino, cuposTextView;
-    private LatLng salidaLocation = new LatLng();
-    private LatLng destinoLocation = new LatLng();
-    private Button btnConfirmar, btnTrayecto, btnConductor, btnPasajero;
-    private String rolViaje = "None";
-    private DatePicker datePicker;
-    private TimePicker timePicker;
-    private TextInputEditText cuposDisponiblesText;
-    private LinearLayout cuposLayout;
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy-kk:mm a");
-    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference viajesReference = database.getReference("Viajes");
-    private DatabaseReference ciudadesReference = database.getReference("Ciudades");
-    private List<String> cities = new LinkedList<>();
+public class PublicarViajeActivity extends BaseActivity implements OnPageChangeListener {
+    private LockableViewPager viewPager;
+    private View indicator1;
+    private View indicator2;
+    private View indicator3;
+    private View indicator4;
+    private View indicator5;
     private SharedPreferences pref;
+    private SharedPreferences.Editor editor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         pref = PreferenceManager.getDefaultSharedPreferences(getApplicationContext());
-        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT-8:00"));
-        //deshabilita el menu del fondo definido en la clase padre
+        editor = pref.edit();
         disableBottomMenu();
         disableViewPager();
         initDrawer();
         setNavViewMenu("publicar_viaje");
         setToolbar("","Agendar Viaje");
         View layout = LayoutInflater.from(this).inflate(R.layout.publicar_viaje_activity,null);
-        Button btnCamino = layout.findViewById(R.id.btnCamino);
-        btnTrayecto = layout.findViewById(R.id.trayectoButton);
-        btnConfirmar = layout.findViewById(R.id.confirmarButton);
-        direccionSalida = layout.findViewById(R.id.txtSalida);
-        direccionDestino = layout.findViewById(R.id.txtDestino);
-        btnPasajero = layout.findViewById(R.id.btnPasajero);
-        btnConductor = layout.findViewById(R.id.btnConductor);
-        datePicker = layout.findViewById(R.id.date);
-        timePicker = layout.findViewById(R.id.hora);
-        cuposDisponiblesText = layout.findViewById(R.id.cuposDisponiblesText);
-        cuposLayout = layout.findViewById(R.id.cuposLayout);
-        cuposTextView = layout.findViewById(R.id.cuposTextView);
-        btnPasajero.setOnClickListener(e->{
-            if(pref.getBoolean("validadoPasajero", false)){
-                btnPasajero.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800")));
-                btnConductor.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0277BD")));
-                rolViaje = "Pasajero";
-                cuposTextView.setText("Cuantos asientos necesitas?");
-                cuposLayout.setVisibility(View.VISIBLE);
-            }else{
-                Snackbar.make(getCurrentFocus(), "No haz llenado tus datos de perfil, por favor llenar todos los campos primero", Snackbar.LENGTH_LONG).show();
+        indicator1 = (View) layout.findViewById(R.id.indicator1);
+        indicator2 = (View) layout.findViewById(R.id.indicator2);
+        indicator3 = (View) layout.findViewById(R.id.indicator3);
+        indicator4 = (View) layout.findViewById(R.id.indicator4);
+        indicator5 = (View) layout.findViewById(R.id.indicator5);
+
+        viewPager = layout.findViewById(R.id.wizardPager);
+        ViewPagerAdapter adapter = new ViewPagerAdapter(getSupportFragmentManager());
+        adapter.addFragment(new DefinirTrayectoFragment());
+        adapter.addFragment(new DefinirTipoViajeFragment());
+        adapter.addFragment(new DefinirFechaViajeFragment());
+        adapter.addFragment(new DefinirHoraViajeFragment());
+        adapter.addFragment(new ConfirmarViajeFragment());
+        viewPager.setAdapter(adapter);
+        viewPager.setOffscreenPageLimit(5);
+        viewPager.setSwipeable(false);
+        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) { }
+            @Override
+            public void onPageSelected(int position) {
+                updateIndicators(position);
             }
+            @Override
+            public void onPageScrollStateChanged(int state) { }
         });
-        btnConductor.setOnClickListener(e->{
-            if(pref.getBoolean("validadoConductor", false)) {
-                if (pref.getBoolean("validadoPasajero", false)) {
-                    btnConductor.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#FF9800")));
-                    btnPasajero.setBackgroundTintList(ColorStateList.valueOf(Color.parseColor("#0277BD")));
-                    rolViaje = "Conductor";
-                    cuposTextView.setText("Cuantos asientos disponibles tendras?");
-                    cuposLayout.setVisibility(View.VISIBLE);
-                } else {
-                    Snackbar.make(getCurrentFocus(), "No haz llenado tus datos de perfil, por favor llenar todos los campos primero", Snackbar.LENGTH_LONG).show();
-                }
-            }else{
-                Snackbar.make(getCurrentFocus(), "No haz agregado un vehiculo, por favor agrega uno primero primero", Snackbar.LENGTH_LONG).show();
-            }
-        });
-        btnCamino.setOnClickListener(e->{
-            Intent intent = new Intent(PublicarViajeActivity.this,MapActivity.class);
-            startActivityForResult(intent, PICK_DIRECCION);
-        });
-        btnTrayecto.setOnClickListener(e->{
-            Intent intent = new Intent(PublicarViajeActivity.this,VisualizeTravelActivity.class);
-            intent.putExtra("direccionDestino",direccionDestino.getText().toString());
-            intent.putExtra("direccionSalida",direccionSalida.getText().toString());
-            intent.putExtra("latitudSalida", salidaLocation.getLatitude());
-            intent.putExtra("longitudSalida", salidaLocation.getLongitude());
-            intent.putExtra("latitudDestino", destinoLocation.getLatitude());
-            intent.putExtra("longitudDestino", destinoLocation.getLongitude());
-            startActivity(intent);
-        });
-        btnConfirmar.setOnClickListener(e->{
-            if(!rolViaje.equals("None") && validateDate() && !cuposDisponiblesText.getText().toString().isEmpty()){
-                //Agendar viaje
-                Viaje viaje = new Viaje();
-                viaje.setDireccionDestino(direccionDestino.getText().toString());
-                viaje.setDireccionSalida(direccionSalida.getText().toString());
-                viaje.setEspaciosDisponibles(Integer.parseInt(cuposDisponiblesText.getText().toString()));
-                viaje.setFechaViaje(String.valueOf(datePicker.getDayOfMonth())+"/"+String.valueOf(datePicker.getMonth())+"/"+String.valueOf(datePicker.getYear()));
-                viaje.setFechaPublicacion(simpleDateFormat.format(Calendar.getInstance().getTime()));
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    String hora = String.valueOf(timePicker.getHour())+":"+String.valueOf(timePicker.getMinute());
-                    if(timePicker.getHour()>=12)
-                        hora += " PM";
-                    else
-                        hora += " AM";
-                    viaje.setHoraViaje(hora);
-                }
-                if(rolViaje.equals("Conductor")){
-                    viaje.setKeyConductor(getCurrentUserKey());
-                }else{
-                    List<String> pasajeros = new LinkedList<>();
-                    pasajeros.add(getCurrentUserKey());
-                    viaje.setKeysPasajeros(pasajeros);
-                }
-                List<LatLng> puntos = new LinkedList<>();
-                puntos.add(salidaLocation);
-                puntos.add(destinoLocation);
-                viaje.setPuntosDeViaje(puntos);
-                viajesReference.child(viaje.getKey()).setValue(viaje, new DatabaseReference.CompletionListener() {
-                    @Override
-                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                        ciudadesReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                            @Override
-                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                for(DataSnapshot data : dataSnapshot.getChildren()) {
-                                    cities.add(data.getValue(String.class));
-                                }
-                                int sizeInicial = cities.size(), sizeFinal = -1;
-                                if(!cities.contains(direccionSalida.getText().toString().split(",")[1].substring(1))){
-                                    cities.add(direccionSalida.getText().toString().split(",")[1].substring(1));
-                                }
-                                if(!cities.contains(direccionDestino.getText().toString().split(",")[1].substring(1))){
-                                    cities.add(direccionDestino.getText().toString().split(",")[1].substring(1));
-                                }
-                                sizeFinal = cities.size();
-                                if(sizeFinal > sizeInicial){
-                                    ciudadesReference.setValue(cities, new DatabaseReference.CompletionListener() {
-                                        @Override
-                                        public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
-                                            Toast.makeText(getApplicationContext(),"Se publico el viaje correctamente",Toast.LENGTH_SHORT).show();
-                                            startActivity(new Intent(PublicarViajeActivity.this, MainMenuActivity.class));
-                                            finish();
-                                        }
-                                    });
-                                }else{
-                                    Toast.makeText(getApplicationContext(),"Se publico el viaje correctamente",Toast.LENGTH_SHORT).show();
-                                    startActivity(new Intent(PublicarViajeActivity.this, MainMenuActivity.class));
-                                    finish();
-                                }
-                            }
-                            @Override
-                            public void onCancelled(@NonNull DatabaseError databaseError) { }
-                        });
-                    }
-                });
-            }else{
-                if(rolViaje.equals("None"))
-                    Toast.makeText(getApplicationContext(),"Debes elegir tu rol en este viaje antes de publicarlo",Toast.LENGTH_SHORT).show();
-                if(!validateDate())
-                    Toast.makeText(getApplicationContext(),"Debes elegir una fecha valida para el viaje",Toast.LENGTH_SHORT).show();
-                if(cuposDisponiblesText.getText().toString().isEmpty())
-                    Toast.makeText(getApplicationContext(),"Debes definir el numero de espacios que se necesitaran",Toast.LENGTH_SHORT).show();
-            }
-        });
+        updateIndicators(0);
         addContent(layout);
     }
 
-    private boolean validateDate() {
+    /*private boolean validateDate() {
         int year, month, day;
-        year = datePicker.getYear();
-        month = datePicker.getMonth();
-        day = datePicker.getDayOfMonth();
+        year = Integer.parseInt(date[2]);
+        month = Integer.parseInt(date[1]);
+        day = Integer.parseInt(date[0]);
         String currentDate = simpleDateFormat.format(Calendar.getInstance().getTime());
-        String[] date = currentDate.split("/");
-        return ((Integer.parseInt(date[0]+Integer.parseInt(date[1])+Integer.parseInt(date[2].split("-")[0])))>=(year+month+day));
-    }
+        String[] fecha = currentDate.split("/");
+        return ((Integer.parseInt(fecha[0]+Integer.parseInt(fecha[1])+1+Integer.parseInt(fecha[2].split("-")[0])))>=(year+month+day));
+    }*/
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if(requestCode == PICK_DIRECCION ){
-            if(resultCode == RESULT_OK) {
-                direccionSalida.setText(data.getStringExtra("direccionInicio"));
-                direccionDestino.setText(data.getStringExtra("direccionDestino"));
-                salidaLocation.setLatitude(data.getDoubleExtra("latitudInicio",0));
-                salidaLocation.setLongitude(data.getDoubleExtra("longitudInicio",0));
-                destinoLocation.setLatitude(data.getDoubleExtra("latitudDestino",0));
-                destinoLocation.setLongitude(data.getDoubleExtra("longitudDestino",0));
-                btnConfirmar.setVisibility(View.VISIBLE);
-                btnTrayecto.setVisibility(View.VISIBLE);
-                }
-            } else {
-                Toast.makeText(getApplicationContext(), "Se cancelo la seleccion de direccion", Toast.LENGTH_SHORT).show();
-            }
+    }
+
+    public void updateIndicators(int position) {
+        DisplayMetrics metrics = getResources().getDisplayMetrics();
+        int resizeValue = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 25, metrics);
+        int defaultValue = (int) TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, 15, metrics);
+        switch (position) {
+            case 0:
+                indicator1.getLayoutParams().height = resizeValue;
+                indicator1.getLayoutParams().width = resizeValue;
+                indicator1.requestLayout();
+
+                indicator2.getLayoutParams().height = defaultValue;
+                indicator2.getLayoutParams().width = defaultValue;
+                indicator2.requestLayout();
+
+                indicator3.getLayoutParams().height = defaultValue;
+                indicator3.getLayoutParams().width = defaultValue;
+                indicator3.requestLayout();
+
+                indicator4.getLayoutParams().height = defaultValue;
+                indicator4.getLayoutParams().width = defaultValue;
+                indicator4.requestLayout();
+
+                indicator5.getLayoutParams().height = defaultValue;
+                indicator5.getLayoutParams().width = defaultValue;
+                indicator5.requestLayout();
+
+                break;
+
+            case 1:
+                indicator1.getLayoutParams().height = defaultValue;
+                indicator1.getLayoutParams().width = defaultValue;
+                indicator1.requestLayout();
+
+                indicator2.getLayoutParams().height = resizeValue;
+                indicator2.getLayoutParams().width = resizeValue;
+                indicator2.requestLayout();
+
+                indicator3.getLayoutParams().height = defaultValue;
+                indicator3.getLayoutParams().width = defaultValue;
+                indicator3.requestLayout();
+
+                indicator4.getLayoutParams().height = defaultValue;
+                indicator4.getLayoutParams().width = defaultValue;
+                indicator4.requestLayout();
+
+                indicator5.getLayoutParams().height = defaultValue;
+                indicator5.getLayoutParams().width = defaultValue;
+                indicator5.requestLayout();
+                break;
+
+            case 2:
+                indicator1.getLayoutParams().height = defaultValue;
+                indicator1.getLayoutParams().width = defaultValue;
+                indicator1.requestLayout();
+
+                indicator2.getLayoutParams().height = defaultValue;
+                indicator2.getLayoutParams().width = defaultValue;
+                indicator2.requestLayout();
+
+                indicator3.getLayoutParams().height = resizeValue;
+                indicator3.getLayoutParams().width = resizeValue;
+                indicator3.requestLayout();
+
+                indicator4.getLayoutParams().height = defaultValue;
+                indicator4.getLayoutParams().width = defaultValue;
+                indicator4.requestLayout();
+
+                indicator5.getLayoutParams().height = defaultValue;
+                indicator5.getLayoutParams().width = defaultValue;
+                indicator5.requestLayout();
+                break;
+
+            case 3:
+                indicator1.getLayoutParams().height = defaultValue;
+                indicator1.getLayoutParams().width = defaultValue;
+                indicator1.requestLayout();
+
+                indicator2.getLayoutParams().height = defaultValue;
+                indicator2.getLayoutParams().width = defaultValue;
+                indicator2.requestLayout();
+
+                indicator3.getLayoutParams().height = defaultValue;
+                indicator3.getLayoutParams().width = defaultValue;
+                indicator3.requestLayout();
+
+                indicator4.getLayoutParams().height = resizeValue;
+                indicator4.getLayoutParams().width = resizeValue;
+                indicator4.requestLayout();
+
+                indicator5.getLayoutParams().height = defaultValue;
+                indicator5.getLayoutParams().width = defaultValue;
+                indicator5.requestLayout();
+                break;
+            case 4:
+                indicator1.getLayoutParams().height = defaultValue;
+                indicator1.getLayoutParams().width = defaultValue;
+                indicator1.requestLayout();
+
+                indicator2.getLayoutParams().height = defaultValue;
+                indicator2.getLayoutParams().width = defaultValue;
+                indicator2.requestLayout();
+
+                indicator3.getLayoutParams().height = defaultValue;
+                indicator3.getLayoutParams().width = defaultValue;
+                indicator3.requestLayout();
+
+                indicator4.getLayoutParams().height = defaultValue;
+                indicator4.getLayoutParams().width = defaultValue;
+                indicator4.requestLayout();
+
+                indicator5.getLayoutParams().height = resizeValue;
+                indicator5.getLayoutParams().width = resizeValue;
+                indicator5.requestLayout();
+                break;
+        }
+
+    }
+    @Override
+    public void finish() {
+        super.finish();
+        clearPreviousPublicationIntent();
+    }
+
+    private void clearPreviousPublicationIntent() {
+        editor.remove("direccionInicio");
+        editor.remove("direccionDestino");
+        editor.remove("latitudInicio");
+        editor.remove("latitudDestino");
+        editor.remove("longitudInicio");
+        editor.remove("longitudDestino");
+        editor.remove("pageOneCompleted");
+        editor.remove("typeSelected");
+        editor.remove("roomSelected");
+        editor.remove("HoraSeleccionada");
+        editor.remove("FechaSeleccionada");
+        editor.remove("FechaPublicada");
+        editor.remove("roomSelected");
+        editor.commit();
+    }
+
+    @Override
+    public void pageChanged(int position) {
+        viewPager.setCurrentItem(position);
     }
 }

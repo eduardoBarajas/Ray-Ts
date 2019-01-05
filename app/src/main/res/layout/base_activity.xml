@@ -39,12 +39,13 @@
                 android:layout_height="match_parent"
                 app:layout_behavior="@string/appbar_scrolling_view_behavior" />
         </LinearLayout>
+
         <android.support.design.widget.BottomNavigationView
             android:id="@+id/navigation"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:background="@color/difumedPrimary"
+            android:background="@color/colorPrimaryDark"
             app:itemIconTint="@color/coolGray"
             app:itemTextColor="@color/coolGray"
             app:menu="@menu/main_menu_bottom_menu" />

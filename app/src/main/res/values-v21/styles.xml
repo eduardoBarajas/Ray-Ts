@@ -17,7 +17,7 @@
         <item name="android:statusBarColor">@color/coolBlue</item>
         <item name="colorPrimary">@color/coolBlue</item>
         <item name="colorPrimaryDark">@color/coolBlue</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/opaqueRed</item>
         <item name="android:windowContentTransitions">true</item>
         <item name="android:windowAllowEnterTransitionOverlap">true</item>
         <item name="android:windowAllowReturnTransitionOverlap">true</item>

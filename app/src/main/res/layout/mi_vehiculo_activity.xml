@@ -89,7 +89,6 @@
                     android:layout_marginBottom="8dp"
                     android:layout_marginEnd="8dp"
                     android:src="@drawable/camera_icon"
-                    app:backgroundTint="@color/coolBlue"
                     app:layout_constraintBottom_toBottomOf="@+id/carImage"
                     app:layout_constraintEnd_toEndOf="@+id/carImage" />
 

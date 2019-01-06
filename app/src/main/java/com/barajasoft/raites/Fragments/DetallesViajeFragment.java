@@ -267,7 +267,7 @@ public class DetallesViajeFragment extends BaseFragment {
         btnViajeCompleto = view.findViewById(R.id.btnViajeCompleto);
         rvPasajeros = view.findViewById(R.id.rvPasajeros);
         Toolbar toolbar = view.findViewById(R.id.toolbar);
-        toolbar.setTitle("Raites");
+        toolbar.setTitle("");
         toolbar.setSubtitle("Detalles del viaje");
         Viaje viaje = new Viaje();
         if(getActivity().getIntent().hasExtra("KeyConductor")){

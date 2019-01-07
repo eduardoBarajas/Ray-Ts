@@ -7,16 +7,23 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.DefaultItemAnimator;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.barajasoft.raites.Activities.ExpandSolicitudViajeActivity;
+import com.barajasoft.raites.Adapters.OtrosPasajerosAdapter;
 import com.barajasoft.raites.Dialogs.AlertDialog;
+import com.barajasoft.raites.Entities.SolicitudViaje;
 import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.Entities.Vehiculo;
 import com.barajasoft.raites.Entities.Viaje;
@@ -42,21 +49,39 @@ public class DetallesViajeFragment extends BaseFragment {
     private DatabaseReference usuariosReference = database.getReference("Usuarios");
     private DatabaseReference vehiculosReference = database.getReference("Vehiculos");
     private DatabaseReference viajesReference = database.getReference("Viajes");
+    private DatabaseReference solicitudesReference = database.getReference("SolicitudesDeViaje");
     private ImageLoader imageLoader;
     private DisplayImageOptions options;
     private OnPageChangeListener onPageChangeListener;
     private TextView nombre, email, telefono, txtSalida, txtDestino, txtHoraSalida, txtFechaSalida, txtVehiculo,
             txtMatricula, txtAsientos, txtAsientosLibres, labelAsientosSolicitados, txtAsientosSolicitados, labelParadas;
-    private Button btnParada, btnViajeCompleto;
+    private Button btnParada, btnViajeCompleto, btnCancelar, btnEditarSolicitud;
     private RecyclerView rvPasajeros;
     private CircularImageView profile;
-    private String viajeAvaible = "";
-    private boolean viewAvaible = false;
-    private String currentConductorKey = "";
+    private LinearLayout unassigned, assigned;
+    private TextView labelCambios;
     private final String changedLabel = "Se realizaron cambios relacionados con el viaje, por favor espera a que el conductor lo corrija";
+
+    private String viajeStatus = "";
+    private Viaje currentViaje;
+    private boolean viewAvaible = false;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        currentViaje = new Viaje();
+        currentViaje.setKey(getActivity().getIntent().getStringExtra("KeyViaje"));
+        viajesReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot data : dataSnapshot.getChildren()){
+                    if(data.getValue(Viaje.class).getKey().equals(currentViaje.getKey()))
+                        currentViaje = data.getValue(Viaje.class);
+                }
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
         pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         editor = pref.edit();
         imageLoader = ImageLoader.getInstance();
@@ -75,12 +100,13 @@ public class DetallesViajeFragment extends BaseFragment {
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
                 if(viewAvaible) {
-                    if(getActivity().getIntent().hasExtra("KeyViaje")) {
-                        if (dataSnapshot.getValue(Viaje.class).getKey().equals(getActivity().getIntent().getStringExtra("KeyViaje"))) {
-                            currentConductorKey = dataSnapshot.getValue(Viaje.class).getKeyConductor();
-                            AlertDialog dlg = new AlertDialog(getActivity(), "Viaje modificado", "El usuario que publico el viaje lo ha modificado, por favor revisa las especificaciones del viaje de nuevo");
-                            dlg.show();
-                            loadViajeDetails(dataSnapshot.getValue(Viaje.class));
+                    if(currentViaje!=null) {
+                        Viaje viajeModified = dataSnapshot.getValue(Viaje.class);
+                        if (viajeModified.getKey().equals(currentViaje.getKey())) {
+                            currentViaje = viajeModified;
+                            viajeStatus = "El usuario que publico el viaje lo ha modificado, por favor revisa las especificaciones del viaje de nuevo";
+                            showDialogAlert("Viaje modificado");
+                            loadViajeDetails(viajeModified);
                         }
                     }
                 }
@@ -89,9 +115,10 @@ public class DetallesViajeFragment extends BaseFragment {
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 //agregar code por si eliminan el viaje
                 if(viewAvaible) {
-                    if(getActivity().getIntent().hasExtra("KeyViaje")) {
-                        if (dataSnapshot.getValue(Viaje.class).getKey().equals(getActivity().getIntent().getStringExtra("KeyViaje"))) {
-                            AlertDialog dlg = new AlertDialog(getActivity(), "Viaje eliminado", "El usuario que publico el viaje lo ha eliminado, seras direccionado a la pantalla anterior");
+                    if(currentViaje!=null) {
+                        Viaje viajeEliminado = dataSnapshot.getValue(Viaje.class);
+                        if (viajeEliminado.getKey().equals(currentViaje.getKey())) {
+                            AlertDialog dlg = new AlertDialog(getActivity(), "Viaje eliminado", "El usuario que publico el viaje lo ha eliminado, seras direccionado a la actividad anterior");
                             dlg.show();
                             dlg.setOnDismissListener(new DialogInterface.OnDismissListener() {
                                 @Override
@@ -111,32 +138,33 @@ public class DetallesViajeFragment extends BaseFragment {
         vehiculosReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.getValue(Vehiculo.class).getUserKey().equals(currentConductorKey)){
-                    validarVehiculo(dataSnapshot.getValue(Vehiculo.class));
-                    loadVehiculo(dataSnapshot.getValue(Vehiculo.class).getMarca()+" "+
-                            dataSnapshot.getValue(Vehiculo.class).getModelo(), dataSnapshot.getValue(Vehiculo.class).getMatricula());
+                Vehiculo vehiculo = dataSnapshot.getValue(Vehiculo.class);
+                if(vehiculo.getUserKey().equals(currentViaje.getKeyConductor())){
+                    validarVehiculo(vehiculo);
+                    loadVehiculo(vehiculo.getMarca()+" "+ vehiculo.getModelo(), vehiculo.getMatricula());
                 }
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.getValue(Vehiculo.class).getUserKey().equals(currentConductorKey)){
-                    if(validarVehiculo(dataSnapshot.getValue(Vehiculo.class))){
+                Vehiculo vehiculoModified = dataSnapshot.getValue(Vehiculo.class);
+                if(vehiculoModified.getUserKey().equals(currentViaje.getKeyConductor())){
+                    if(validarVehiculo(vehiculoModified)){
                         //es valido
-                        viajeAvaible = "La informacion del vehiculo ha sido modificada, por favor revisala de nuevo";
+                        viajeStatus = "La informacion del vehiculo ha sido modificada, por favor revisala de nuevo";
                         showDialogAlert("Vehiculo del viaje");
                     }else{
                         //no es valido
                         showDialogAlert("Vehiculo del viaje");
                     }
-                    loadVehiculo(dataSnapshot.getValue(Vehiculo.class).getMarca()+" "+
-                            dataSnapshot.getValue(Vehiculo.class).getModelo(), dataSnapshot.getValue(Vehiculo.class).getMatricula());
+                    loadVehiculo(vehiculoModified.getMarca()+" "+vehiculoModified.getModelo(), vehiculoModified.getMatricula());
                 }
             }
             @Override
             public void onChildRemoved(@NonNull DataSnapshot dataSnapshot) {
                 //agregar code por si eliminan al carro
-                if(dataSnapshot.getValue(Vehiculo.class).getUserKey().equals(currentConductorKey)){
-                    viajeAvaible = "El usuario hizo elimino el vehiculo de este viaje, por favor espera a que el conductor lo corrija";
+                Vehiculo vehiculoEliminado = dataSnapshot.getValue(Vehiculo.class);
+                if(vehiculoEliminado.getUserKey().equals(currentViaje.getKeyConductor())){
+                    viajeStatus = "El usuario hizo elimino el vehiculo de este viaje, por favor espera a que el conductor lo corrija";
                     showDialogAlert("Vehiculo del viaje");
                     loadVehiculo("No disponible", "No disponible");
                 }
@@ -149,26 +177,25 @@ public class DetallesViajeFragment extends BaseFragment {
         usuariosReference.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.getValue(User.class).getKey().equals(currentConductorKey)){
-                    User user = dataSnapshot.getValue(User.class);
+                User user = dataSnapshot.getValue(User.class);
+                if(user.getKey().equals(currentViaje.getKeyConductor())){
                     validarConductor(user);
                     loadUser(user.getNombre(), user.getImagenPerfil(), user.getTelefono(), user.getCorreo());
                 }
             }
             @Override
             public void onChildChanged(@NonNull DataSnapshot dataSnapshot, @Nullable String s) {
-                if(dataSnapshot.getValue(User.class).getKey().equals(currentConductorKey)){
-                    User user = dataSnapshot.getValue(User.class);
-                    if(validarConductor(user)){
+                User userModified = dataSnapshot.getValue(User.class);
+                if(userModified.getKey().equals(currentViaje.getKeyConductor())){
+                    if(validarConductor(userModified)){
                         //es valido
-                        viajeAvaible = "La informacion del conductor ha sido modificada, por favor revisala de nuevo";
+                        viajeStatus = "La informacion del conductor ha sido modificada, por favor revisala de nuevo";
                         showDialogAlert("Informacion del conductor");
                     }else{
                         //no es valido
-
                         showDialogAlert("Informacion del conductor");
                     }
-                    loadUser(user.getNombre(), user.getImagenPerfil(), user.getTelefono(), user.getCorreo());
+                    loadUser(userModified.getNombre(), userModified.getImagenPerfil(), userModified.getTelefono(), userModified.getCorreo());
                 }
             }
             @Override
@@ -184,13 +211,14 @@ public class DetallesViajeFragment extends BaseFragment {
 
     private void showDialogAlert(String title) {
         if(viewAvaible){
-            AlertDialog dlg = new AlertDialog(getActivity(), title, viajeAvaible);
+            AlertDialog dlg = new AlertDialog(getActivity(), title, viajeStatus);
             dlg.show();
         }
     }
 
     private boolean validarVehiculo(Vehiculo value) {
         if(!value.isValidado()){
+            viajeStatus = changedLabel;
             if(value.getMatricula().isEmpty())
                 value.setMatricula("No disponible");
             if(value.getModelo().isEmpty() || value.getMarca().isEmpty()) {
@@ -199,21 +227,21 @@ public class DetallesViajeFragment extends BaseFragment {
             }
             return false;
         }else{
-            viajeAvaible = "Not Changed";
+            viajeStatus = "Valid";
             return true;
         }
     }
 
     private boolean validarConductor(User user) {
         if(!user.isValidadoPasajero()){
-            viajeAvaible = changedLabel;
+            viajeStatus = changedLabel;
             if(user.getTelefono().isEmpty())
                 user.setTelefono("No disponible");
             if(user.getNombre().isEmpty())
                 user.setNombre("No disponible");
             return false;
         }else{
-            viajeAvaible = "Not Changed";
+            viajeStatus = "Valid";
             return true;
         }
     }
@@ -223,19 +251,13 @@ public class DetallesViajeFragment extends BaseFragment {
         imageLoader.displayImage(imagenPerfil, profile, options);
         email.setText(correo);
         telefono.setText(tel);
-        if(viajeAvaible.equals(changedLabel))
-            disableAgendarButtons(false);
-        else
-            disableAgendarButtons(true);
+        updateUIControls();
     }
 
     private void loadVehiculo(String s, String matricula) {
         txtVehiculo.setText(s);
         txtMatricula.setText(matricula);
-        if(viajeAvaible.equals(changedLabel))
-            disableAgendarButtons(false);
-        else
-            disableAgendarButtons(true);
+        updateUIControls();
     }
 
     @Nullable
@@ -248,6 +270,11 @@ public class DetallesViajeFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         viewAvaible = true;
+        btnCancelar = view.findViewById(R.id.btnCancelar);
+        btnEditarSolicitud = view.findViewById(R.id.btnEditarSolicitud);
+        labelCambios = view.findViewById(R.id.labelCambios);
+        unassigned = view.findViewById(R.id.unassigned);
+        assigned = view.findViewById(R.id.assigned);
         labelParadas = view.findViewById(R.id.lblParadas);
         txtAsientosSolicitados = view.findViewById(R.id.txtNumeroAsientosSolicitados);
         labelAsientosSolicitados = view.findViewById(R.id.labelCuantosAsientos);
@@ -266,30 +293,28 @@ public class DetallesViajeFragment extends BaseFragment {
         btnParada = view.findViewById(R.id.btnParada);
         btnViajeCompleto = view.findViewById(R.id.btnViajeCompleto);
         rvPasajeros = view.findViewById(R.id.rvPasajeros);
+        rvPasajeros.setHasFixedSize(true);
+        RecyclerView.LayoutManager manager = new LinearLayoutManager(getContext(),LinearLayoutManager.VERTICAL, false);
+        rvPasajeros.setLayoutManager(manager);
+        rvPasajeros.setItemAnimator(new DefaultItemAnimator());
         Toolbar toolbar = view.findViewById(R.id.toolbar);
         toolbar.setTitle("");
         toolbar.setSubtitle("Detalles del viaje");
-        Viaje viaje = new Viaje();
         if(getActivity().getIntent().hasExtra("KeyConductor")){
             Intent data = getActivity().getIntent();
-            viaje.setKeyConductor(data.getStringExtra("KeyConductor"));
-            viaje.setDireccionDestino(data.getStringExtra("Destino"));
-            viaje.setDireccionSalida(data.getStringExtra("Salida"));
-            viaje.setFechaViaje(data.getStringExtra("FechaSalida"));
-            viaje.setHoraViaje(data.getStringExtra("HoraSalida"));
-            viaje.setEspaciosDisponibles(data.getIntExtra("EspaciosDisponibles", 0));
+            currentViaje.setKeyConductor(data.getStringExtra("KeyConductor"));
+            currentViaje.setDireccionDestino(data.getStringExtra("Destino"));
+            currentViaje.setDireccionSalida(data.getStringExtra("Salida"));
+            currentViaje.setFechaViaje(data.getStringExtra("FechaSalida"));
+            currentViaje.setHoraViaje(data.getStringExtra("HoraSalida"));
+            currentViaje.setEspaciosDisponibles(data.getIntExtra("EspaciosDisponibles", 0));
+            for(String key : data.getStringArrayExtra("PasajerosKeys"))
+                currentViaje.getKeysPasajeros().add(key);
         }
-        currentConductorKey = viaje.getKeyConductor();
-        loadViajeDetails(viaje);
+        loadViajeDetails(currentViaje);
     }
 
     private void loadViajeDetails(Viaje currentViaje) {
-        if(currentViaje.getKeyConductor().equals(pref.getString("Key", null))){
-            txtAsientosSolicitados.setVisibility(View.GONE);
-            labelAsientosSolicitados.setVisibility(View.GONE);
-            btnParada.setVisibility(View.GONE);
-            btnViajeCompleto.setVisibility(View.GONE);
-        }
         txtDestino.setText(currentViaje.getDireccionDestino());
         txtSalida.setText(currentViaje.getDireccionSalida());
         txtFechaSalida.setText(currentViaje.getFechaViaje());
@@ -304,24 +329,75 @@ public class DetallesViajeFragment extends BaseFragment {
                 Toast.makeText(getContext(), "Primero debes seleccionar el numero de asientos que necesitas", Toast.LENGTH_LONG).show();
             }
         });
+        //poner a los pasajeros
+        if(currentViaje.getKeysPasajeros().size() > 0){
+            OtrosPasajerosAdapter adapter = new OtrosPasajerosAdapter(getContext(), currentViaje.getKeysPasajeros());
+            rvPasajeros.setAdapter(adapter);
+            rvPasajeros.setVisibility(View.VISIBLE);
+            txtAsientosLibres.setVisibility(View.GONE);
+        }else{
+            txtAsientosLibres.setVisibility(View.VISIBLE);
+            rvPasajeros.setVisibility(View.GONE);
+        }
         btnViajeCompleto.setOnClickListener(e->{
             Toast.makeText(getContext(), "Asignar viaje", Toast.LENGTH_LONG).show();
         });
-        if(viajeAvaible.equals(changedLabel))
-            disableAgendarButtons(false);
-        else
-            disableAgendarButtons(true);
+        btnEditarSolicitud.setOnClickListener(e->{
+            solicitudesReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot data : dataSnapshot.getChildren()){
+                        if(data.getValue(SolicitudViaje.class).getKeyPasajero().equals(pref.getString("key", null))){
+                            Intent intent = new Intent(getContext(), ExpandSolicitudViajeActivity.class);
+                            intent.putExtra("Edicion", "true");
+                            intent.putExtra("solicitud_key", data.getValue(SolicitudViaje.class).getKey());
+                            startActivity(intent);
+                            break;
+                        }
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
+            });
+        });
+        btnCancelar.setOnClickListener(e->{
+        });
+        updateUIControls();
     }
 
-    private void disableAgendarButtons(boolean enabled){
-        if(!enabled){
-            labelParadas.setText("El viaje esta siendo revisado por el conductor, por favor vuelve a revisar mas tarde.");
-            btnParada.setVisibility(View.GONE);
-            btnViajeCompleto.setVisibility(View.GONE);
+    private void updateUIControls(){
+        if(viajeStatus.equals(changedLabel)){
+            //checa si se ha cambiado algo en la informacion del viaje
+            labelCambios.setVisibility(View.VISIBLE);
+            assigned.setVisibility(View.GONE);
+            unassigned.setVisibility(View.GONE);
+            Log.e("Entro x1", "Segun entro por que hubo cambios");
         }else{
-            labelParadas.setText("No viajas hasta destino del conductor? Solicita un punto de parada");
-            btnParada.setVisibility(View.VISIBLE);
-            btnViajeCompleto.setVisibility(View.VISIBLE);
+            //aqui si entra si no ha habido cambios
+            if(currentViaje.getKeyConductor().equals(pref.getString("key", null))){
+                //si soy el conductor entonces no deben salir los botones de agendar
+                labelCambios.setVisibility(View.GONE);
+                unassigned.setVisibility(View.GONE);
+                assigned.setVisibility(View.VISIBLE);
+                Log.e("Entro x1", "Segun entro por que Era el conductor");
+            } else{
+                boolean isAssigned = false;
+                for(String keys : currentViaje.getKeysPasajeros()){
+                    if(keys.equals(pref.getString("key", null))){
+                        Log.e("Entro x1", "Segun entro por que era pasajero");
+                        labelCambios.setVisibility(View.GONE);
+                        unassigned.setVisibility(View.GONE);
+                        assigned.setVisibility(View.VISIBLE);
+                        isAssigned = true;
+                    }
+                }
+                if(!isAssigned){
+                    labelCambios.setVisibility(View.GONE);
+                    unassigned.setVisibility(View.VISIBLE);
+                    assigned.setVisibility(View.GONE);
+                    Log.e("Entro x1", "Segun entro por que no es ni pasajero, ni conductor ni hubo cambios");
+                }
+            }
         }
     }
 

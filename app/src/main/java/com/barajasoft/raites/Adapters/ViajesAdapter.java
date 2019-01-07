@@ -16,6 +16,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.barajasoft.raites.Activities.ExpandSolicitudViajeActivity;
 import com.barajasoft.raites.Activities.ExpandViajeActivity;
 import com.barajasoft.raites.Activities.SolicitudesViajeActivity;
 import com.barajasoft.raites.Dialogs.EstadoSolicitudDialog;
@@ -79,7 +80,11 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
         if(pref.getString("key", null).equals(viaje.getKeyConductor())){
             holder.txtRol.setText("Conductor");
         }else{
-            holder.txtRol.setText("Pasajero");
+
+            for(String pasajero : viaje.getKeysPasajeros()){
+                if(pref.getString("key", null).equals(pasajero))
+                    holder.txtRol.setText("Pasajero");
+            }
         }
         holder.btnSolicitudes.setVisibility(View.GONE);
         holder.verMas.setOnClickListener(e->{
@@ -107,8 +112,11 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
                         solicitudActual = solicitudViaje;
                         if(solicitudViaje.getKeyPasajero().equals(pref.getString("key", null))){
                             holder.btnSolicitudes.setOnClickListener(e->{
-                                EstadoSolicitudDialog dlg = new EstadoSolicitudDialog(context, solicitudActual);
-                                dlg.show();
+                                Intent intent = new Intent(context, ExpandSolicitudViajeActivity.class);
+                                intent.putExtra("solicitud_key", solicitudViaje.getKey());
+                                context.startActivity(intent);
+//                                EstadoSolicitudDialog dlg = new EstadoSolicitudDialog(context, solicitudActual);
+//                                dlg.show();
                             });
                         }
                         if(viaje.getKeyConductor().equals(pref.getString("key", null))){

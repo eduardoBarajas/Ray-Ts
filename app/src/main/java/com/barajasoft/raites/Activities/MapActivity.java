@@ -199,7 +199,7 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
                 MapActivity.this.mapboxMap = mapboxMap;
                 navigationMapRoute = new NavigationMapRoute(null, mapView, mapboxMap, R.style.NavigationMapRoute);
                 mapboxMap.setLatLngBoundsForCameraTarget(BC_BOUNDS);
-                mapboxMap.setMaxZoomPreference(14);
+                //mapboxMap.setMaxZoomPreference(14);
                 mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(@NonNull LatLng point) {
@@ -265,8 +265,8 @@ public class MapActivity extends AppCompatActivity implements AdapterView.OnItem
             }
         });
         btnConfirmar.setOnClickListener(e->{
-                RESULT_CODE = RESULT_OK;
-                finish();
+            RESULT_CODE = RESULT_OK;
+            finish();
         });
     }
 

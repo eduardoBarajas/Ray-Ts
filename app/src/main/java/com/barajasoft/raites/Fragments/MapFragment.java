@@ -49,6 +49,8 @@ import com.mapbox.services.android.navigation.v5.navigation.NavigationRoute;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.TimeZone;
 
 import retrofit2.Call;
@@ -97,7 +99,9 @@ public class MapFragment extends BaseFragment implements OnMapReadyCallback{
                         mapboxMap.removeMarker(currentMarker);
                     currentMarker = mapboxMap.addMarker(new MarkerOptions().position(new LatLng(currentParada.latitude(), currentParada.longitude()))
                             .title("Parada Seleccionada").snippet(direccion.toString()));
-                    mapUtilities.getRutaConParada(navigationMapRoute, inicio, destino, currentParada);
+                    List<Point> paradasList = new LinkedList<>();
+                    paradasList.add(currentParada);
+                    mapUtilities.getRutaConParada(navigationMapRoute, inicio, destino, paradasList);
                 }
             }
         };

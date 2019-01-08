@@ -133,13 +133,15 @@ public class MapUtilities {
     }
 
 
-    public void getRutaConParada(NavigationMapRoute navMap, Point inicio, Point destino, Point parada) {
-        NavigationRoute.builder(context)
+    public void getRutaConParada(NavigationMapRoute navMap, Point inicio, Point destino, List<Point> parada) {
+        NavigationRoute.Builder builder = NavigationRoute.builder(context)
                 .accessToken(context.getString(R.string.mapbox_access_token))
                 .origin(inicio)
-                .destination(destino)
-                .addWaypoint(parada)
-                .build().getRoute(new Callback<DirectionsResponse>() {
+                .destination(destino);
+        for(Point p : parada){
+            builder.addWaypoint(p);
+        }
+        builder.build().getRoute(new Callback<DirectionsResponse>() {
             @Override
             public void onResponse(Call<DirectionsResponse> call, retrofit2.Response<DirectionsResponse> response) {
                 // You can get the generic HTTP info about the response

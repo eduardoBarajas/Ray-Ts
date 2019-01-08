@@ -95,6 +95,8 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
             intent.putExtra("HoraSalida", viaje.getHoraViaje());
             intent.putExtra("KeyConductor", viaje.getKeyConductor());
             intent.putExtra("KeyViaje", viaje.getKey());
+            if(solicitudActual!=null)
+                intent.putExtra("KeySolicitud", solicitudActual.getKey());
             String[] pasajeros = new String[viaje.getKeysPasajeros().size()];
             for(int i = 0; i < pasajeros.length; i++)
                 pasajeros[i] = viaje.getKeysPasajeros().get(i);

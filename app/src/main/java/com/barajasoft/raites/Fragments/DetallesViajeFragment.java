@@ -23,11 +23,13 @@ import android.widget.Toast;
 import com.barajasoft.raites.Activities.ExpandSolicitudViajeActivity;
 import com.barajasoft.raites.Adapters.OtrosPasajerosAdapter;
 import com.barajasoft.raites.Dialogs.AlertDialog;
+import com.barajasoft.raites.Dialogs.YesOrNoChooserDialog;
 import com.barajasoft.raites.Entities.SolicitudViaje;
 import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.Entities.Vehiculo;
 import com.barajasoft.raites.Entities.Viaje;
 import com.barajasoft.raites.Listeners.OnPageChangeListener;
+import com.barajasoft.raites.Listeners.ResultListener;
 import com.barajasoft.raites.R;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -35,11 +37,16 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DetallesViajeFragment extends BaseFragment {
 
@@ -61,7 +68,7 @@ public class DetallesViajeFragment extends BaseFragment {
     private LinearLayout unassigned, assigned;
     private TextView labelCambios;
     private final String changedLabel = "Se realizaron cambios relacionados con el viaje, por favor espera a que el conductor lo corrija";
-
+    private ResultListener listener;
     private String viajeStatus = "";
     private Viaje currentViaje;
     private boolean viewAvaible = false;
@@ -69,6 +76,35 @@ public class DetallesViajeFragment extends BaseFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        pref = PreferenceManager.getDefaultSharedPreferences(getContext());
+        listener = new ResultListener() {
+            @Override
+            public void result(String tag, Object result) {
+                if(tag.equals("CancelarSolicitud")){
+                    if(((String)result).equals("Accept")){
+                        solicitudesReference.child(getActivity().getIntent().getStringExtra("KeySolicitud")).setValue(null, new DatabaseReference.CompletionListener() {
+                            @Override
+                            public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                Map<String, Object> datos = new HashMap<>();
+                                List<LatLng> nuevasParadas = currentViaje.getPuntosDeParada();
+                                List<String> nuevasKeysUsuarios = currentViaje.getKeysPasajeros();
+                                nuevasParadas.remove(nuevasKeysUsuarios.indexOf(pref.getString("key", null)));
+                                nuevasKeysUsuarios.remove(nuevasKeysUsuarios.indexOf(pref.getString("key", null)));
+                                datos.put("keysPasajeros", nuevasKeysUsuarios);
+                                datos.put("puntosDeParada", nuevasParadas);
+                                viajesReference.child(currentViaje.getKey()).updateChildren(datos, new DatabaseReference.CompletionListener() {
+                                    @Override
+                                    public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                                        Toast.makeText(getContext(), "Se cancelo la solicitud", Toast.LENGTH_SHORT);
+                                        getActivity().finish();
+                                    }
+                                });
+                            }
+                        });
+                    }
+                }
+            }
+        };
         currentViaje = new Viaje();
         currentViaje.setKey(getActivity().getIntent().getStringExtra("KeyViaje"));
         viajesReference.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -82,7 +118,6 @@ public class DetallesViajeFragment extends BaseFragment {
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }
         });
-        pref = PreferenceManager.getDefaultSharedPreferences(getContext());
         editor = pref.edit();
         imageLoader = ImageLoader.getInstance();
         options = new DisplayImageOptions.Builder()
@@ -361,6 +396,9 @@ public class DetallesViajeFragment extends BaseFragment {
             });
         });
         btnCancelar.setOnClickListener(e->{
+            YesOrNoChooserDialog dlg = new YesOrNoChooserDialog(getContext(), "CancelarSolicitud", "Cancelar Solicitud De VIaje",
+                    "Estas seguro que quieres cancelar la solicitud?", listener);
+            dlg.show();
         });
         updateUIControls();
     }

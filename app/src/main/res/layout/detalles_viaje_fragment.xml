@@ -79,90 +79,82 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/dark_blue_overlay"
-        android:visibility="visible"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <android.support.constraint.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <TextView
-                android:id="@+id/labelCambios"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="56dp"
-                android:layout_marginTop="32dp"
-                android:fontFamily="@font/roboto_thin"
-                android:text="El conductor esta realizando cambios en la informacion del viaje, por favor regresa mas tarde para poder agendar un viaje"
-                android:textAlignment="center"
-                android:textColor="@android:color/background_light"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView7" />
-
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                android:fontFamily="@font/roboto_thin"
-                android:text="Informacion Contacto"
-                android:textColor="@color/cardview_light_background"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent" />
+        <TextView
+            android:id="@+id/labelCambios"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="56dp"
+            android:layout_marginTop="32dp"
+            android:fontFamily="@font/roboto_thin"
+            android:text="El conductor esta realizando cambios en la informacion del viaje, por favor regresa mas tarde para poder agendar un viaje"
+            android:textAlignment="center"
+            android:textColor="@android:color/background_light"
+            android:textSize="24sp"
+            android:textStyle="bold"
+            android:visibility="gone" />
 
             <android.support.v7.widget.CardView
                 android:id="@+id/cardView"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
+                android:layout_marginBottom="96dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                app:cardCornerRadius="8dp"
                 app:cardElevation="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/textView2"
-                app:layout_constraintStart_toStartOf="@+id/textView2"
-                app:layout_constraintTop_toBottomOf="@+id/textView2">
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
                 <android.support.constraint.ConstraintLayout
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
+
+                    <TextView
+                        android:id="@+id/textView2"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/roboto_thin"
+                        android:text="Informacion Contacto"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
                     <ImageView
                         android:id="@+id/imageView4"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:layout_marginBottom="16dp"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
                         android:src="@drawable/email_icon"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.181" />
+                        app:layout_constraintStart_toStartOf="@+id/textView2"
+                        app:layout_constraintTop_toBottomOf="@+id/textView2" />
 
                     <TextView
                         android:id="@+id/textView17"
                         android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginStart="8dp"
+                        android:layout_height="24dp"
                         android:fontFamily="@font/roboto_thin"
                         android:text="Correo: "
                         android:textColor="@color/common_google_signin_btn_text_light_pressed"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/imageView4"
+                        app:layout_constraintBottom_toTopOf="@+id/imageView11"
                         app:layout_constraintStart_toEndOf="@+id/imageView4"
                         app:layout_constraintTop_toTopOf="@+id/imageView4" />
 
@@ -170,32 +162,27 @@
                         android:id="@+id/txtEmail"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toEndOf="@+id/textView17"
-                        app:layout_constraintTop_toTopOf="@+id/textView17" />
+                        app:layout_constraintTop_toTopOf="@+id/imageView4" />
 
                     <ImageView
                         android:id="@+id/imageView11"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:layout_marginBottom="16dp"
                         android:layout_marginTop="8dp"
                         android:src="@drawable/telefono_icon"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/imageView4"
-                        app:layout_constraintTop_toBottomOf="@+id/txtEmail"
-                        app:layout_constraintVertical_bias="0.0" />
+                        app:layout_constraintTop_toBottomOf="@+id/txtEmail" />
 
                     <TextView
                         android:id="@+id/textView8"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:text="Telefono: "
@@ -210,67 +197,43 @@
                         android:id="@+id/txtTelefono"
                         android:layout_width="150dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
                         android:fontFamily="@font/roboto_thin"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         app:layout_constraintBottom_toBottomOf="@+id/textView8"
                         app:layout_constraintStart_toEndOf="@+id/textView8"
-                        app:layout_constraintTop_toTopOf="@+id/textView8"
-                        app:layout_constraintVertical_bias="1.0" />
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
+                        app:layout_constraintTop_toTopOf="@+id/textView8" />
 
-            <TextView
-                android:id="@+id/textView39"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/roboto_thin"
-                android:text="Informacion Del Viaje"
-                android:textColor="@color/cardview_light_background"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView" />
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/cardView10"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                android:layout_marginTop="8dp"
-                app:cardElevation="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/textView39"
-                app:layout_constraintStart_toStartOf="@+id/textView39"
-                app:layout_constraintTop_toBottomOf="@+id/textView39">
-
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/textView39"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="32dp"
+                        android:fontFamily="@font/roboto_thin"
+                        android:text="Informacion Del Viaje"
+                        android:textColor="@color/colorPrimary"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txtTelefono" />
 
                     <ImageView
                         android:id="@+id/imageView13"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
                         android:layout_margin="8dp"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
                         android:src="@drawable/ticket_salida"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintStart_toStartOf="@+id/textView39"
+                        app:layout_constraintTop_toBottomOf="@+id/textView39" />
 
                     <TextView
                         android:id="@+id/textView15"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginStart="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:text="Salida: "
                         android:textColor="@color/common_google_signin_btn_text_light_pressed"
@@ -284,19 +247,19 @@
                         android:id="@+id/txtSalida"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="20dp"
+                        android:layout_marginTop="4dp"
                         android:fontFamily="@font/roboto_thin"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18sp"
                         android:textStyle="bold"
                         app:layout_constraintStart_toEndOf="@+id/textView15"
-                        app:layout_constraintTop_toTopOf="@+id/textView15" />
+                        app:layout_constraintTop_toTopOf="@+id/imageView13" />
 
                     <ImageView
                         android:id="@+id/imageView16"
                         android:layout_width="32dp"
                         android:layout_height="32dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="16dp"
                         android:src="@drawable/ticket_destino"
                         app:layout_constraintStart_toStartOf="@+id/imageView13"
                         app:layout_constraintTop_toBottomOf="@+id/txtSalida" />
@@ -306,7 +269,6 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
                         android:fontFamily="@font/roboto_thin"
@@ -322,7 +284,6 @@
                         android:id="@+id/txtDestino"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="4dp"
                         android:fontFamily="@font/roboto_thin"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18sp"
@@ -334,7 +295,7 @@
                         android:id="@+id/imageView14"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="16dp"
                         android:src="@drawable/hora_viaje_icon"
                         app:layout_constraintStart_toStartOf="@+id/imageView16"
                         app:layout_constraintTop_toBottomOf="@+id/txtDestino" />
@@ -344,8 +305,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginStart="28dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:text="Hora Salida: "
                         android:textColor="@color/common_google_signin_btn_text_light_pressed"
@@ -359,7 +320,6 @@
                         android:id="@+id/txtHoraSalida"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18sp"
@@ -371,10 +331,8 @@
                         android:id="@+id/imageView15"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginTop="16dp"
                         android:src="@drawable/fecha_viaje_icon"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/imageView14"
                         app:layout_constraintTop_toBottomOf="@+id/txtHoraSalida" />
 
@@ -383,8 +341,8 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:text="Fecha Salida: "
                         android:textColor="@color/common_google_signin_btn_text_light_pressed"
@@ -398,65 +356,36 @@
                         android:id="@+id/txtFechaSalida"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:layout_marginBottom="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView42"
                         app:layout_constraintStart_toEndOf="@+id/textView42"
                         app:layout_constraintTop_toTopOf="@+id/textView42" />
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
 
-            <TextView
-                android:id="@+id/textView46"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/roboto_thin"
-                android:text="Informacion Del Transporte"
-                android:textColor="@color/cardview_light_background"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="@+id/cardView10"
-                app:layout_constraintStart_toStartOf="@+id/cardView10"
-                app:layout_constraintTop_toBottomOf="@+id/cardView10" />
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/cardView2"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                app:cardElevation="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/textView46"
-                app:layout_constraintStart_toStartOf="@+id/textView46"
-                app:layout_constraintTop_toBottomOf="@+id/textView46">
-
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content">
-
-                    <ImageView
-                        android:id="@+id/imageView12"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
-                        android:layout_margin="8dp"
+                    <TextView
+                        android:id="@+id/textView46"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="8dp"
-                        android:src="@drawable/mi_auto_icon"
+                        android:layout_marginTop="16dp"
+                        android:fontFamily="@font/roboto_thin"
+                        android:text="Informacion Del Transporte"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent" />
+                        app:layout_constraintTop_toBottomOf="@+id/txtFechaSalida" />
 
                     <TextView
                         android:id="@+id/textView41"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:layout_marginStart="12dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:text="Vehiculo: "
                         android:textColor="@color/common_google_signin_btn_text_light_pressed"
@@ -466,17 +395,25 @@
                         app:layout_constraintStart_toEndOf="@+id/imageView12"
                         app:layout_constraintTop_toTopOf="@+id/imageView12" />
 
+                    <ImageView
+                        android:id="@+id/imageView12"
+                        android:layout_width="32dp"
+                        android:layout_height="32dp"
+                        android:layout_margin="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:src="@drawable/mi_auto_icon"
+                        app:layout_constraintStart_toStartOf="@+id/textView46"
+                        app:layout_constraintTop_toBottomOf="@+id/textView46" />
+
                     <TextView
                         android:id="@+id/txtVehiculo"
                         android:layout_width="250dp"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:layout_marginBottom="240dp"
                         android:fontFamily="@font/roboto_thin"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView41"
                         app:layout_constraintStart_toEndOf="@+id/textView41"
                         app:layout_constraintTop_toTopOf="@+id/textView41" />
 
@@ -484,20 +421,18 @@
                         android:id="@+id/imageView17"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginTop="8dp"
+                        android:layout_marginTop="16dp"
                         android:src="@drawable/placas_auto_icon"
-                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="@+id/imageView12"
-                        app:layout_constraintTop_toBottomOf="@+id/imageView12" />
+                        app:layout_constraintTop_toBottomOf="@+id/txtVehiculo" />
 
                     <TextView
                         android:id="@+id/textView14"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:text="Matricula: "
                         android:textColor="@color/common_google_signin_btn_text_light_pressed"
@@ -511,70 +446,47 @@
                         android:id="@+id/txtMatricula"
                         android:layout_width="200dp"
                         android:layout_height="wrap_content"
-                        android:layout_margin="8dp"
-                        android:layout_marginStart="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView14"
                         app:layout_constraintStart_toEndOf="@+id/textView14"
                         app:layout_constraintTop_toTopOf="@+id/textView14" />
 
-                </android.support.constraint.ConstraintLayout>
-            </android.support.v7.widget.CardView>
-
-            <TextView
-                android:id="@+id/textView44"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/roboto_thin"
-                android:text="Asientos Disponibles"
-                android:textColor="@color/cardview_light_background"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView2" />
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/cardView6"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_margin="8dp"
-                app:cardElevation="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/textView44"
-                app:layout_constraintStart_toStartOf="@+id/textView44"
-                app:layout_constraintTop_toBottomOf="@+id/textView44">
-
-                <android.support.constraint.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+                    <TextView
+                        android:id="@+id/textView44"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="32dp"
+                        android:fontFamily="@font/roboto_thin"
+                        android:text="Asientos Disponibles"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txtMatricula" />
 
                     <ImageView
                         android:id="@+id/imageView18"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:layout_marginBottom="8dp"
-                        android:layout_marginStart="16dp"
+                        android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
                         android:src="@drawable/asientos_icon"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:layout_constraintVertical_bias="0.0" />
+                        app:layout_constraintStart_toStartOf="@+id/textView44"
+                        app:layout_constraintTop_toBottomOf="@+id/textView44" />
 
                     <TextView
                         android:id="@+id/textView37"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_margin="8dp"
-                        android:layout_marginBottom="8dp"
                         android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
                         android:fontFamily="@font/roboto_thin"
                         android:text="Asientos Disponibles: "
                         android:textColor="@color/common_google_signin_btn_text_light_pressed"
@@ -592,206 +504,190 @@
                         android:textColor="@color/colorPrimaryDark"
                         android:textSize="18sp"
                         android:textStyle="bold"
-                        app:layout_constraintBottom_toBottomOf="@+id/textView37"
+                        app:layout_constraintStart_toEndOf="@+id/textView37"
+                        app:layout_constraintTop_toTopOf="@+id/textView37" />
+
+                    <TextView
+                        android:id="@+id/textView45"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="32dp"
+                        android:fontFamily="@font/roboto_thin"
+                        android:text="Otros Pasajeros"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/txtAsientos" />
+
+                    <android.support.v7.widget.RecyclerView
+                        android:id="@+id/rvPasajeros"
+                        android:layout_width="match_parent"
+                        android:layout_height="175dp"
+                        android:layout_margin="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:orientation="horizontal"
+                        android:visibility="visible"
+                        app:layout_constraintEnd_toEndOf="@+id/textView45"
+                        app:layout_constraintStart_toStartOf="@+id/textView45"
+                        app:layout_constraintTop_toBottomOf="@+id/textView45" />
+
+                    <TextView
+                        android:id="@+id/txtAsientosLibres"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:fontFamily="@font/roboto_thin"
+                        android:text="Todos los asientos libres!"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorAccent"
+                        android:textSize="36sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/textView45"
+                        app:layout_constraintStart_toStartOf="@+id/textView45"
+                        app:layout_constraintTop_toBottomOf="@+id/textView45" />
+
+                    <LinearLayout
+                        android:id="@+id/unassigned"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="216dp"
+                        android:orientation="vertical"
+                        android:visibility="gone"
+                        app:layout_constraintTop_toBottomOf="@+id/textView45"
+                        tools:layout_editor_absoluteX="0dp">
+
+                        <TextView
+                            android:id="@+id/labelCuantosAsientos"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:fontFamily="@font/roboto_thin"
+                            android:text="Cuantos asientos necesitaras?"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorPrimaryDark"
+                            android:textSize="24sp" />
+
+                        <android.support.design.widget.TextInputLayout
+                            android:id="@+id/textInputLayout5"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:hint="Numero Asientos"
+                            android:textColorHint="@color/colorPrimaryDark">
+
+                            <android.support.design.widget.TextInputEditText
+                                android:id="@+id/txtNumeroAsientosSolicitados"
+                                android:layout_width="match_parent"
+                                android:layout_height="match_parent"
+                                android:fontFamily="@font/roboto_thin"
+                                android:textColor="@color/colorAccent"
+                                android:textStyle="bold"
+                                android:visibility="visible" />
+                        </android.support.design.widget.TextInputLayout>
+
+                        <Button
+                            android:id="@+id/btnViajeCompleto"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="24dp"
+                            android:backgroundTint="@color/mapbox_navigation_route_alternative_shield_color"
+                            android:text="Agendar Viaje Completo"
+                            android:textColor="@color/cardview_light_background" />
+
+                        <TextView
+                            android:id="@+id/lblParadas"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="24dp"
+                            android:fontFamily="@font/roboto_thin"
+                            android:text="No viajas hasta destino del conductor? Solicita un punto de parada"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorPrimaryDark"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:id="@+id/btnParada"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
+                            android:text="Solicitar Parada"
+                            android:textColor="@color/cardview_light_background" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/assigned"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="216dp"
+                        android:orientation="vertical"
+                        android:visibility="visible"
+                        app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
-                        app:layout_constraintStart_toEndOf="@+id/textView37"
-                        app:layout_constraintTop_toTopOf="@+id/textView37"
-                        app:layout_constraintVertical_bias="1.0" />
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView45">
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="@font/roboto_thin"
+                            android:text="Cambio de planes? actualiza o cancela la solicitud para este viaje antes de que parta"
+                            android:textAlignment="center"
+                            android:textColor="@color/colorPrimaryDark"
+                            android:textSize="18sp"
+                            android:textStyle="bold" />
+
+                        <Button
+                            android:id="@+id/btnEditarSolicitud"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginBottom="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="8dp"
+                            android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
+                            android:text="Editar Solicitud"
+                            android:textColor="@color/cardview_light_background" />
+
+                        <Button
+                            android:id="@+id/btnCancelar"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center"
+                            android:layout_marginEnd="8dp"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginTop="24dp"
+                            android:backgroundTint="@color/mapbox_navigation_route_alternative_shield_color"
+                            android:text="Cancelar Viaje"
+                            android:textColor="@color/cardview_light_background" />
+                    </LinearLayout>
+
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>
-
-            <TextView
-                android:id="@+id/textView45"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="24dp"
-                android:fontFamily="@font/roboto_thin"
-                android:text="Otros Pasajeros"
-                android:textColor="@color/cardview_light_background"
-                android:textSize="24sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView6" />
-
-            <android.support.v7.widget.CardView
-                android:id="@+id/cardView7"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="8dp"
-                app:cardElevation="8dp"
-                app:layout_constraintEnd_toEndOf="@+id/textView45"
-                app:layout_constraintStart_toStartOf="@+id/textView45"
-                app:layout_constraintTop_toBottomOf="@+id/textView45">
-
-                <android.support.v7.widget.RecyclerView
-                    android:id="@+id/rvPasajeros"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:orientation="horizontal"
-                    android:visibility="gone" />
-
-                <TextView
-                    android:id="@+id/txtAsientosLibres"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:fontFamily="@font/roboto_thin"
-                    android:text="Todos los asientos libres!"
-                    android:textAlignment="center"
-                    android:textColor="@color/colorAccent"
-                    android:textSize="36sp"
-                    android:textStyle="bold"
-                    android:visibility="gone" />
-            </android.support.v7.widget.CardView>
-
-            <LinearLayout
-                android:id="@+id/unassigned"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="56dp"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="@+id/textView45"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="@+id/textView45"
-                app:layout_constraintTop_toBottomOf="@+id/cardView7">
-
-                <TextView
-                    android:id="@+id/labelCuantosAsientos"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="24dp"
-                    android:fontFamily="@font/roboto_thin"
-                    android:text="Cuantos asientos necesitaras?"
-                    android:textAlignment="center"
-                    android:textColor="@color/cardview_light_background"
-                    android:textSize="24sp" />
-
-                <android.support.design.widget.TextInputLayout
-                    android:id="@+id/textInputLayout5"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:hint="Numero Asientos"
-                    android:textColorHint="@color/cardview_light_background">
-
-                    <android.support.design.widget.TextInputEditText
-                        android:id="@+id/txtNumeroAsientosSolicitados"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:fontFamily="@font/roboto_thin"
-                        android:textColor="@color/cardview_light_background"
-                        android:textStyle="bold"
-                        android:visibility="visible" />
-                </android.support.design.widget.TextInputLayout>
-
-                <Button
-                    android:id="@+id/btnViajeCompleto"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="24dp"
-                    android:backgroundTint="@color/mapbox_navigation_route_alternative_shield_color"
-                    android:text="Agendar Viaje Completo"
-                    android:textColor="@color/cardview_light_background" />
-
-                <TextView
-                    android:id="@+id/lblParadas"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="24dp"
-                    android:fontFamily="@font/roboto_thin"
-                    android:text="No viajas hasta destino del conductor? Solicita un punto de parada"
-                    android:textAlignment="center"
-                    android:textColor="@color/cardview_light_background"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnParada"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
-                    android:text="Solicitar Parada"
-                    android:textColor="@color/cardview_light_background" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/assigned"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="56dp"
-                android:layout_marginEnd="8dp"
-                android:layout_marginStart="8dp"
-                android:layout_marginTop="16dp"
-                android:orientation="vertical"
-                android:visibility="gone"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.0"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView7">
-
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:fontFamily="@font/roboto_thin"
-                    android:text="Cambio de planes? actualiza o cancela la solicitud para este viaje antes de que parta"
-                    android:textAlignment="center"
-                    android:textColor="@color/cardview_light_background"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-
-                <Button
-                    android:id="@+id/btnEditarSolicitud"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginBottom="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="8dp"
-                    android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
-                    android:text="Editar Solicitud"
-                    android:textColor="@color/cardview_light_background" />
-
-                <Button
-                    android:id="@+id/btnCancelar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginEnd="8dp"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginTop="24dp"
-                    android:backgroundTint="@color/mapbox_navigation_route_alternative_shield_color"
-                    android:text="Cancelar Viaje"
-                    android:textColor="@color/cardview_light_background" />
-            </LinearLayout>
         </android.support.constraint.ConstraintLayout>
-
     </android.support.v4.widget.NestedScrollView>
-
 </android.support.design.widget.CoordinatorLayout>

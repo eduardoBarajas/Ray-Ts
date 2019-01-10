@@ -35,18 +35,17 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesViewHolder>{
     private List<Viaje> viajeList = new LinkedList<>();
     private Context context;
     private SharedPreferences pref;
     private SolicitudViaje solicitudActual;
-    private final FirebaseDatabase database = FirebaseDatabase.getInstance();
-    private DatabaseReference viajesReference = database.getReference("Viajes");
-    private DatabaseReference usuariosReference = database.getReference("Usuarios");
-    private DatabaseReference solicitudesReference = database.getReference("SolicitudesDeViaje");
+    private Map<String, List<SolicitudViaje>> solicitudesViaje = new HashMap<>();
 
     public ViajesAdapter(Context context){
         this.context = context;
@@ -77,16 +76,14 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
         holder.txtDestinoHeader.setText(viaje.getDireccionDestino().split(",")[1].substring(1, 4));
         holder.txtDestino.setText(viaje.getDireccionDestino().split(",")[0]);
         holder.txtSalida.setText(viaje.getDireccionSalida().split(",")[0]);
-        if(pref.getString("key", null).equals(viaje.getKeyConductor())){
+        //si el usuario actual es el conductor se agrega la etiqueta de conductor, si no lo es se busca entre
+        //los pasajeros del viaje, si tampoco entonces se queda vacio
+        if(pref.getString("key", null).equals(viaje.getKeyConductor()))
             holder.txtRol.setText("Conductor");
-        }else{
-
-            for(String pasajero : viaje.getKeysPasajeros()){
+        else
+            for(String pasajero : viaje.getKeysPasajeros())
                 if(pref.getString("key", null).equals(pasajero))
                     holder.txtRol.setText("Pasajero");
-            }
-        }
-        holder.btnSolicitudes.setVisibility(View.GONE);
         holder.verMas.setOnClickListener(e->{
             Intent intent = new Intent(context, ExpandViajeActivity.class);
             intent.putExtra("Destino", viaje.getDireccionDestino());
@@ -95,8 +92,9 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
             intent.putExtra("HoraSalida", viaje.getHoraViaje());
             intent.putExtra("KeyConductor", viaje.getKeyConductor());
             intent.putExtra("KeyViaje", viaje.getKey());
-            if(solicitudActual!=null)
-            intent.putExtra("KeySolicitud", solicitudActual.getKey());
+            //si la solicitudActual no es nula se envia como parte del intent
+            if(solicitudActual != null)
+                intent.putExtra("KeySolicitud", solicitudActual.getKey());
             String[] pasajeros = new String[viaje.getKeysPasajeros().size()];
             for(int i = 0; i < pasajeros.length; i++)
                 pasajeros[i] = viaje.getKeysPasajeros().get(i);
@@ -104,42 +102,28 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
             intent.putExtra("EspaciosDisponibles", viaje.getEspaciosDisponibles());
             context.startActivity(intent);
         });
-        solicitudesReference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                boolean found = false;
-                for(DataSnapshot data : dataSnapshot.getChildren()){
-                    SolicitudViaje solicitudViaje = data.getValue(SolicitudViaje.class);
-                    if(solicitudViaje.getKeyViaje().equals(viaje.getKey())){
-                        solicitudActual = solicitudViaje;
-                        if(solicitudViaje.getKeyPasajero().equals(pref.getString("key", null))){
-                            holder.btnSolicitudes.setOnClickListener(e->{
-                                Intent intent = new Intent(context, ExpandSolicitudViajeActivity.class);
-                                intent.putExtra("solicitud_key", solicitudViaje.getKey());
-                                context.startActivity(intent);
-//                                EstadoSolicitudDialog dlg = new EstadoSolicitudDialog(context, solicitudActual);
-//                                dlg.show();
-                            });
-                        }
-                        if(viaje.getKeyConductor().equals(pref.getString("key", null))){
-                            holder.btnSolicitudes.setOnClickListener(e->{
-                                Intent intent = new Intent(context, SolicitudesViajeActivity.class);
-                                intent.putExtra("KeyViaje", viaje.getKey());
-                                context.startActivity(intent);
-                            });
-                        }
-                        found = true;
-                    }
-                }
-                if(found){
-                    holder.btnSolicitudes.setVisibility(View.VISIBLE);
-                }else{
-                    holder.btnSolicitudes.setVisibility(View.GONE);
-                }
+        boolean solicitudFound = false;
+        if(solicitudesViaje.get(viaje.getKey())!=null)
+            for(int i = 0; i < solicitudesViaje.get(viaje.getKey()).size(); i++){
+                solicitudActual = solicitudesViaje.get(viaje.getKey()).get(i);
+                if(solicitudActual.getKeyPasajero().equals(pref.getString("key", null)))
+                    holder.btnSolicitudes.setOnClickListener(e->{
+                        Intent intent = new Intent(context, ExpandSolicitudViajeActivity.class);
+                        intent.putExtra("solicitud_key", solicitudActual.getKey());
+                        context.startActivity(intent);
+                    });
+                if(viaje.getKeyConductor().equals(pref.getString("key", null)))
+                    holder.btnSolicitudes.setOnClickListener(e->{
+                        Intent intent = new Intent(context, SolicitudesViajeActivity.class);
+                        intent.putExtra("KeyViaje", viaje.getKey());
+                        context.startActivity(intent);
+                    });
+                solicitudFound = true;
             }
-            @Override
-            public void onCancelled(@NonNull DatabaseError databaseError) { }
-        });
+        if(solicitudFound)
+            holder.btnSolicitudes.setVisibility(View.VISIBLE);
+        else
+            holder.btnSolicitudes.setVisibility(View.GONE);
     }
 
     @Override
@@ -175,24 +159,36 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
 
     public void removeViaje(String key){
         Viaje eliminar = null;
-        for(Viaje v : viajeList){
+        for(Viaje v : viajeList)
             if(v.getKey().equals(key))
                 eliminar = v;
-        }
         if(eliminar != null)
             viajeList.remove(eliminar);
     }
 
     public void modifyViaje(Viaje viaje){
-        for(Viaje v : viajeList){
-            if(v.getKey().equals(viaje.getKey())){
+        for(Viaje v : viajeList)
+            if(v.getKey().equals(viaje.getKey()))
                 viajeList.set(viajeList.indexOf(v), viaje);
-                break;
-            }
-        }
     }
 
     public void clear(){
         viajeList.clear();
+        solicitudesViaje.clear();
+    }
+
+    public void addSolicitudViaje(String viajeKey, SolicitudViaje solicitud){
+        boolean found = false;
+        if(solicitudesViaje.get(viajeKey) == null)
+            solicitudesViaje.put(viajeKey, new LinkedList<>());
+        for(int i = 0; i < solicitudesViaje.get(viajeKey).size(); i++)
+               if(solicitudesViaje.get(viajeKey).get(i).getKey().equals(solicitud.getKey()))
+                   found = true;
+        if(!found)
+            solicitudesViaje.get(viajeKey).add(solicitud);
+    }
+
+    public void removeSolicitudesViaje(String viajeKey){
+        solicitudesViaje.remove(viajeKey);
     }
 }

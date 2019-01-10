@@ -1,4 +1,4 @@
-package com.barajasoft.raites.Fragments;
+/*package com.barajasoft.raites.Fragments;
 
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -308,8 +308,7 @@ public class DetallesViajeFragment extends BaseFragment {
         btnCancelar = view.findViewById(R.id.btnCancelar);
         btnEditarSolicitud = view.findViewById(R.id.btnEditarSolicitud);
         labelCambios = view.findViewById(R.id.labelCambios);
-        unassigned = view.findViewById(R.id.unassigned);
-        assigned = view.findViewById(R.id.assigned);
+
         labelParadas = view.findViewById(R.id.lblParadas);
         txtAsientosSolicitados = view.findViewById(R.id.txtNumeroAsientosSolicitados);
         labelAsientosSolicitados = view.findViewById(R.id.labelCuantosAsientos);
@@ -479,3 +478,4 @@ public class DetallesViajeFragment extends BaseFragment {
     }
 
 }
+*/

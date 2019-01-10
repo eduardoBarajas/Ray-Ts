@@ -24,7 +24,6 @@ import com.barajasoft.raites.Adapters.ViewPagerAdapter;
 import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.Entities.Vehiculo;
 import com.barajasoft.raites.Fragments.BuscarViajesFragment;
-import com.barajasoft.raites.Fragments.DetallesViajeFragment;
 import com.barajasoft.raites.Fragments.MapFragment;
 import com.barajasoft.raites.Fragments.ViajesActivosFragment;
 import com.barajasoft.raites.Listeners.OnPageChangeListener;
@@ -235,10 +234,10 @@ public class BaseActivity extends AppCompatActivity implements OnPageChangeListe
                 adapter.addFragment(new BuscarViajesFragment());
                 break;
             case "ExpandedViaje":
-                DetallesViajeFragment f2 = new DetallesViajeFragment();
-                f2.setListener(onPageChangeListener);
-                adapter.addFragment(f2);
-                adapter.addFragment(new MapFragment());
+//                DetallesViajeFragment f2 = new DetallesViajeFragment();
+//                f2.setListener(onPageChangeListener);
+//                adapter.addFragment(f2);
+                //adapter.addFragment(new MapFragment());
                 break;
         }
         viewPager.setAdapter(adapter);

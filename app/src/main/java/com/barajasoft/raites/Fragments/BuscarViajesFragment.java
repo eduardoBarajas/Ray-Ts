@@ -18,6 +18,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.barajasoft.raites.Adapters.ViajesAdapter;
+import com.barajasoft.raites.Entities.SolicitudViaje;
 import com.barajasoft.raites.Entities.Viaje;
 import com.barajasoft.raites.R;
 import com.google.firebase.database.DataSnapshot;
@@ -28,11 +29,13 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class BuscarViajesFragment extends BaseFragment {
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference viajesReference = database.getReference("Viajes");
     private DatabaseReference ciudadesReference = database.getReference("Ciudades");
+    private DatabaseReference solicitudesReference = database.getReference("SolicitudesDeViaje");
     private ViajesAdapter viajesAdapter;
     private ImageView imageNoViajes;
     private TextView txtNoViajes;
@@ -116,27 +119,53 @@ public class BuscarViajesFragment extends BaseFragment {
             @Override
             public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                 for(DataSnapshot data : dataSnapshot.getChildren()){
+                    Viaje viajeEncontrado = data.getValue(Viaje.class);
                     if(!desde.isEmpty()){
                         if(!hasta.isEmpty()){
                             //tiene los dos
-                            if(data.getValue(Viaje.class).getDireccionSalida().contains(desde) && data.getValue(Viaje.class).getDireccionDestino().contains(hasta)){
-                                viajesAdapter.addViaje(data.getValue(Viaje.class));
+                            if(viajeEncontrado.getDireccionSalida().contains(desde) && viajeEncontrado.getDireccionDestino().contains(hasta)){
+                                viajesAdapter.addViaje(viajeEncontrado);
+                                hasSolicitudes(viajeEncontrado);
                             }
                         }else{
                             //solo desde
-                            if(data.getValue(Viaje.class).getDireccionSalida().contains(desde)){
+                            if(viajeEncontrado.getDireccionSalida().contains(desde)){
                                 viajesAdapter.addViaje(data.getValue(Viaje.class));
+                                hasSolicitudes(viajeEncontrado);
                             }
                         }
                     }else{
                         //solo destino
-                        if(data.getValue(Viaje.class).getDireccionDestino().contains(hasta)){
+                        if(viajeEncontrado.getDireccionDestino().contains(hasta)){
                             viajesAdapter.addViaje(data.getValue(Viaje.class));
+                            hasSolicitudes(viajeEncontrado);
                         }
                     }
                 }
                 viajesAdapter.notifyDataSetChanged();
                 isViajesEmpty();
+            }
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) { }
+        });
+    }
+
+    private void hasSolicitudes(Viaje viajeEncontrado){
+        AtomicBoolean solicitudFound = new AtomicBoolean(false);
+        solicitudesReference.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                for(DataSnapshot solicitud: dataSnapshot.getChildren()){
+                    if(solicitud.getValue(SolicitudViaje.class).getKeyViaje().equals(viajeEncontrado.getKey())){
+                        viajesAdapter.addSolicitudViaje(viajeEncontrado.getKey(), solicitud.getValue(SolicitudViaje.class));
+                        solicitudFound.set(true);
+                    }
+                }
+                if(solicitudFound.get()){
+                    viajesAdapter.notifyDataSetChanged();
+                    isViajesEmpty();
+                    solicitudFound.set(false);
+                }
             }
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) { }

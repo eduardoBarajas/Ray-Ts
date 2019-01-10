@@ -85,19 +85,19 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-        <TextView
-            android:id="@+id/labelCambios"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="56dp"
-            android:layout_marginTop="32dp"
-            android:fontFamily="@font/roboto_thin"
-            android:text="El conductor esta realizando cambios en la informacion del viaje, por favor regresa mas tarde para poder agendar un viaje"
-            android:textAlignment="center"
-            android:textColor="@android:color/background_light"
-            android:textSize="24sp"
-            android:textStyle="bold"
-            android:visibility="gone" />
+            <TextView
+                android:id="@+id/labelCambios"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="56dp"
+                android:layout_marginTop="32dp"
+                android:fontFamily="@font/roboto_thin"
+                android:text="El conductor esta realizando cambios en la informacion del viaje, por favor regresa mas tarde para poder agendar un viaje"
+                android:textAlignment="center"
+                android:textColor="@android:color/background_light"
+                android:textSize="24sp"
+                android:textStyle="bold"
+                android:visibility="gone" />
 
             <android.support.v7.widget.CardView
                 android:id="@+id/cardView"
@@ -531,7 +531,7 @@
                         android:layout_marginStart="8dp"
                         android:layout_marginTop="8dp"
                         android:orientation="horizontal"
-                        android:visibility="visible"
+                        android:visibility="gone"
                         app:layout_constraintEnd_toEndOf="@+id/textView45"
                         app:layout_constraintStart_toStartOf="@+id/textView45"
                         app:layout_constraintTop_toBottomOf="@+id/textView45" />
@@ -552,139 +552,151 @@
                         app:layout_constraintStart_toStartOf="@+id/textView45"
                         app:layout_constraintTop_toBottomOf="@+id/textView45" />
 
-                    <LinearLayout
-                        android:id="@+id/unassigned"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="216dp"
-                        android:orientation="vertical"
-                        android:visibility="gone"
-                        app:layout_constraintTop_toBottomOf="@+id/textView45"
-                        tools:layout_editor_absoluteX="0dp">
 
-                        <TextView
-                            android:id="@+id/labelCuantosAsientos"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginStart="8dp"
-                            android:fontFamily="@font/roboto_thin"
-                            android:text="Cuantos asientos necesitaras?"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimaryDark"
-                            android:textSize="24sp" />
-
-                        <android.support.design.widget.TextInputLayout
-                            android:id="@+id/textInputLayout5"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_margin="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:hint="Numero Asientos"
-                            android:textColorHint="@color/colorPrimaryDark">
-
-                            <android.support.design.widget.TextInputEditText
-                                android:id="@+id/txtNumeroAsientosSolicitados"
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:fontFamily="@font/roboto_thin"
-                                android:textColor="@color/colorAccent"
-                                android:textStyle="bold"
-                                android:visibility="visible" />
-                        </android.support.design.widget.TextInputLayout>
-
-                        <Button
-                            android:id="@+id/btnViajeCompleto"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="24dp"
-                            android:backgroundTint="@color/mapbox_navigation_route_alternative_shield_color"
-                            android:text="Agendar Viaje Completo"
-                            android:textColor="@color/cardview_light_background" />
-
-                        <TextView
-                            android:id="@+id/lblParadas"
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="24dp"
-                            android:fontFamily="@font/roboto_thin"
-                            android:text="No viajas hasta destino del conductor? Solicita un punto de parada"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimaryDark"
-                            android:textStyle="bold" />
-
-                        <Button
-                            android:id="@+id/btnParada"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginBottom="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
-                            android:text="Solicitar Parada"
-                            android:textColor="@color/cardview_light_background" />
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:id="@+id/assigned"
+                    <TextView
+                        android:id="@+id/labelAsientosUnassigned"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="8dp"
                         android:layout_marginStart="8dp"
-                        android:layout_marginTop="216dp"
-                        android:orientation="vertical"
-                        android:visibility="visible"
+                        android:layout_marginTop="250dp"
+                        android:fontFamily="@font/roboto_thin"
+                        android:text="Cuantos asientos necesitaras?"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="24sp"
+                        android:visibility="gone"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintHorizontal_bias="0.0"
                         app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toBottomOf="@+id/textView45">
+                        app:layout_constraintTop_toBottomOf="@+id/textView45"
+                        app:layout_constraintVertical_bias="0.0" />
 
-                        <TextView
+                    <android.support.design.widget.TextInputLayout
+                        android:id="@+id/txtLayoutUnassigned"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_margin="8dp"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:hint="Numero Asientos"
+                        android:textColorHint="@color/colorPrimaryDark"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/labelAsientosUnassigned">
+
+                        <android.support.design.widget.TextInputEditText
+                            android:id="@+id/txtNumeroAsientosSolicitados"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
+                            android:layout_height="match_parent"
                             android:fontFamily="@font/roboto_thin"
-                            android:text="Cambio de planes? actualiza o cancela la solicitud para este viaje antes de que parta"
-                            android:textAlignment="center"
-                            android:textColor="@color/colorPrimaryDark"
-                            android:textSize="18sp"
-                            android:textStyle="bold" />
+                            android:textColor="@color/colorAccent"
+                            android:textStyle="bold"
+                            android:visibility="visible" />
+                    </android.support.design.widget.TextInputLayout>
 
-                        <Button
-                            android:id="@+id/btnEditarSolicitud"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginBottom="8dp"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="8dp"
-                            android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
-                            android:text="Editar Solicitud"
-                            android:textColor="@color/cardview_light_background" />
+                    <Button
+                        android:id="@+id/btnViajeCompletoUnassigned"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/mapbox_navigation_route_alternative_shield_color"
+                        android:text="Agendar Viaje Completo"
+                        android:textColor="@color/cardview_light_background"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/txtLayoutUnassigned"
+                        app:layout_constraintStart_toStartOf="@+id/txtLayoutUnassigned"
+                        app:layout_constraintTop_toBottomOf="@+id/txtLayoutUnassigned" />
 
-                        <Button
-                            android:id="@+id/btnCancelar"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_gravity="center"
-                            android:layout_marginEnd="8dp"
-                            android:layout_marginStart="8dp"
-                            android:layout_marginTop="24dp"
-                            android:backgroundTint="@color/mapbox_navigation_route_alternative_shield_color"
-                            android:text="Cancelar Viaje"
-                            android:textColor="@color/cardview_light_background" />
-                    </LinearLayout>
+                    <TextView
+                        android:id="@+id/lblParadasUnassigned"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:fontFamily="@font/roboto_thin"
+                        android:text="No viajas hasta destino del conductor? Solicita un punto de parada"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/btnViajeCompletoUnassigned" />
+
+                    <Button
+                        android:id="@+id/btnParadaUnassigned"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
+                        android:text="Solicitar Parada"
+                        android:textColor="@color/cardview_light_background"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/lblParadasUnassigned"
+                        app:layout_constraintStart_toStartOf="@+id/lblParadasUnassigned"
+                        app:layout_constraintTop_toBottomOf="@+id/lblParadasUnassigned" />
+
+                    <TextView
+                        android:id="@+id/lblAssigned"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="250dp"
+                        android:fontFamily="@font/roboto_thin"
+                        android:text="Cambio de planes? actualiza o cancela la solicitud para este viaje antes de que parta"
+                        android:textAlignment="center"
+                        android:textColor="@color/colorPrimaryDark"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:visibility="gone"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintHorizontal_bias="0.0"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toBottomOf="@+id/textView45"
+                        app:layout_constraintVertical_bias="0.0" />
+
+                    <Button
+                        android:id="@+id/btnEditarSolicitudAssigned"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginStart="8dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/mapbox_navigation_route_upcoming_maneuver_arrow_border_color"
+                        android:text="Editar Solicitud"
+                        android:textColor="@color/cardview_light_background"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/lblAssigned"
+                        app:layout_constraintStart_toStartOf="@+id/lblAssigned"
+                        app:layout_constraintTop_toBottomOf="@+id/lblAssigned" />
+
+                    <Button
+                        android:id="@+id/btnCancelarAssigned"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginEnd="8dp"
+                        android:layout_marginTop="8dp"
+                        android:backgroundTint="@color/mapbox_navigation_route_alternative_shield_color"
+                        android:text="Cancelar Viaje"
+                        android:textColor="@color/cardview_light_background"
+                        android:visibility="gone"
+                        app:layout_constraintEnd_toEndOf="@+id/btnEditarSolicitudAssigned"
+                        app:layout_constraintHorizontal_bias="1.0"
+                        app:layout_constraintStart_toStartOf="@+id/btnEditarSolicitudAssigned"
+                        app:layout_constraintTop_toBottomOf="@+id/btnEditarSolicitudAssigned" />
 
                 </android.support.constraint.ConstraintLayout>
             </android.support.v7.widget.CardView>

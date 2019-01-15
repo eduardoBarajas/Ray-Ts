@@ -29,6 +29,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
 import com.nostra13.universalimageloader.core.ImageLoader;
@@ -39,6 +40,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesViewHolder>{
     private List<Viaje> viajeList = new LinkedList<>();
@@ -46,6 +48,8 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
     private SharedPreferences pref;
     private SolicitudViaje solicitudActual;
     private Map<String, List<SolicitudViaje>> solicitudesViaje = new HashMap<>();
+    private Map<String, Integer> usersSolicitud = new HashMap<>();
+
 
     public ViajesAdapter(Context context){
         this.context = context;
@@ -64,10 +68,13 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
         //para ajustar un contraint dinamicamente
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(holder.rootConstraint);
+       //si el texto de la direccion de destino es mas largo que el de direccion de salida entonces se coloca el constraint
+        //sobre el
         if(viaje.getDireccionDestino().length() > viaje.getDireccionSalida().length())
             constraintSet.connect(holder.divisorCard.getId(), ConstraintSet.TOP, holder.txtDestino.getId(), ConstraintSet.BOTTOM,8);
         else
             constraintSet.connect(holder.divisorCard.getId(), ConstraintSet.TOP, holder.txtSalida .getId(), ConstraintSet.BOTTOM,8);
+
         constraintSet.applyTo(holder.rootConstraint);
         holder.txtEspacios.setText(String.valueOf(viaje.getEspaciosDisponibles()));
         holder.txtHora.setText("Sale a la(s) "+viaje.getHoraViaje());
@@ -84,6 +91,38 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
             for(String pasajero : viaje.getKeysPasajeros())
                 if(pref.getString("key", null).equals(pasajero))
                     holder.txtRol.setText("Pasajero");
+
+        boolean solicitudFound = false;
+        if(solicitudesViaje.get(viaje.getKey())!=null)
+            for(int i = 0; i < solicitudesViaje.get(viaje.getKey()).size(); i++){
+                solicitudActual = solicitudesViaje.get(viaje.getKey()).get(i);
+                if(solicitudActual.getKeyPasajero().equals(pref.getString("key", null))){
+                    usersSolicitud.put(pref.getString("key", null), i);
+                    solicitudFound = true;
+                    holder.btnSolicitudes.setOnClickListener(e->{
+                        Intent intent = new Intent(context, ExpandSolicitudViajeActivity.class);
+                        intent.putExtra("KeySolicitud", solicitudesViaje.get(viaje.getKey()).get(usersSolicitud.get(pref.getString("key", null))).getKey());
+                        intent.putExtra("KeyViaje", viaje.getKey());
+                        context.startActivity(intent);
+                    });
+                }
+                //si entra en la siguiente condicion quiere decir que el usuario actual es el conductor de ese viaje
+                //por lo que lo redireccionara a las solicitudes hechas para ese viaje
+                if(viaje.getKeyConductor().equals(pref.getString("key", null))){
+                    solicitudFound = true;
+                    holder.btnSolicitudes.setOnClickListener(e->{
+                        holder.btnSolicitudes.setText("Solicitudes");
+                        Intent intent = new Intent(context, SolicitudesViajeActivity.class);
+                        intent.putExtra("KeyViaje", viaje.getKey());
+                        context.startActivity(intent);
+                    });
+                }
+            }
+        if(solicitudFound)
+            holder.btnSolicitudes.setVisibility(View.VISIBLE);
+        else
+            holder.btnSolicitudes.setVisibility(View.GONE);
+
         holder.verMas.setOnClickListener(e->{
             Intent intent = new Intent(context, ExpandViajeActivity.class);
             intent.putExtra("Destino", viaje.getDireccionDestino());
@@ -93,37 +132,19 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
             intent.putExtra("KeyConductor", viaje.getKeyConductor());
             intent.putExtra("KeyViaje", viaje.getKey());
             //si la solicitudActual no es nula se envia como parte del intent
-            if(solicitudActual != null)
+            if(solicitudActual!=null)
                 intent.putExtra("KeySolicitud", solicitudActual.getKey());
             String[] pasajeros = new String[viaje.getKeysPasajeros().size()];
             for(int i = 0; i < pasajeros.length; i++)
                 pasajeros[i] = viaje.getKeysPasajeros().get(i);
             intent.putExtra("PasajerosKeys", pasajeros);
             intent.putExtra("EspaciosDisponibles", viaje.getEspaciosDisponibles());
+            intent.putExtra("latitudSalida", viaje.getPuntosDeViaje().get(0).getLatitude());
+            intent.putExtra("longitudSalida", viaje.getPuntosDeViaje().get(0).getLongitude());
+            intent.putExtra("latitudDestino", viaje.getPuntosDeViaje().get(1).getLatitude());
+            intent.putExtra("longitudDestino", viaje.getPuntosDeViaje().get(1).getLongitude());
             context.startActivity(intent);
         });
-        boolean solicitudFound = false;
-        if(solicitudesViaje.get(viaje.getKey())!=null)
-            for(int i = 0; i < solicitudesViaje.get(viaje.getKey()).size(); i++){
-                solicitudActual = solicitudesViaje.get(viaje.getKey()).get(i);
-                if(solicitudActual.getKeyPasajero().equals(pref.getString("key", null)))
-                    holder.btnSolicitudes.setOnClickListener(e->{
-                        Intent intent = new Intent(context, ExpandSolicitudViajeActivity.class);
-                        intent.putExtra("solicitud_key", solicitudActual.getKey());
-                        context.startActivity(intent);
-                    });
-                if(viaje.getKeyConductor().equals(pref.getString("key", null)))
-                    holder.btnSolicitudes.setOnClickListener(e->{
-                        Intent intent = new Intent(context, SolicitudesViajeActivity.class);
-                        intent.putExtra("KeyViaje", viaje.getKey());
-                        context.startActivity(intent);
-                    });
-                solicitudFound = true;
-            }
-        if(solicitudFound)
-            holder.btnSolicitudes.setVisibility(View.VISIBLE);
-        else
-            holder.btnSolicitudes.setVisibility(View.GONE);
     }
 
     @Override
@@ -179,13 +200,16 @@ public class ViajesAdapter extends RecyclerView.Adapter<ViajesAdapter.ViajesView
 
     public void addSolicitudViaje(String viajeKey, SolicitudViaje solicitud){
         boolean found = false;
-        if(solicitudesViaje.get(viajeKey) == null)
+        if(solicitudesViaje.get(viajeKey) == null) {
             solicitudesViaje.put(viajeKey, new LinkedList<>());
-        for(int i = 0; i < solicitudesViaje.get(viajeKey).size(); i++)
-               if(solicitudesViaje.get(viajeKey).get(i).getKey().equals(solicitud.getKey()))
-                   found = true;
-        if(!found)
             solicitudesViaje.get(viajeKey).add(solicitud);
+        }else{
+            for(int i = 0; i < solicitudesViaje.get(viajeKey).size(); i++)
+                if(solicitudesViaje.get(viajeKey).get(i).getKey().equals(solicitud.getKey()))
+                    found = true;
+            if(!found)
+                solicitudesViaje.get(viajeKey).add(solicitud);
+        }
     }
 
     public void removeSolicitudesViaje(String viajeKey){

@@ -6,6 +6,7 @@ import android.widget.Toast;
 
 import com.barajasoft.raites.Listeners.ResultListener;
 import com.barajasoft.raites.R;
+import com.mapbox.api.directions.v5.MapboxDirections;
 import com.mapbox.api.directions.v5.models.DirectionsResponse;
 import com.mapbox.api.geocoding.v5.GeocodingCriteria;
 import com.mapbox.api.geocoding.v5.MapboxGeocoding;
@@ -137,7 +138,8 @@ public class MapUtilities {
         NavigationRoute.Builder builder = NavigationRoute.builder(context)
                 .accessToken(context.getString(R.string.mapbox_access_token))
                 .origin(inicio)
-                .destination(destino);
+                .destination(destino)
+                .profile("driving");
         for(Point p : parada){
             builder.addWaypoint(p);
         }

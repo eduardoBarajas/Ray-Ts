@@ -32,6 +32,7 @@ import com.mapbox.mapboxsdk.geometry.LatLng;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class ExpandSolicitudViajeActivity extends AppCompatActivity {
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
@@ -48,6 +49,7 @@ public class ExpandSolicitudViajeActivity extends AppCompatActivity {
     private Point paradaModificada;
     private boolean isModified = false;
     private ResultListener listener;
+    private List<SolicitudViaje> solicitudes = new LinkedList<>();
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -100,15 +102,24 @@ public class ExpandSolicitudViajeActivity extends AppCompatActivity {
                 }
             }
         };
-        if(getIntent().hasExtra("solicitud_key")){
+
+        //cuando entra por el adaptador de viajes, y se pasa la llave entonces entra
+        if(getIntent().hasExtra("KeySolicitud")){
+            Toast.makeText(getApplicationContext(), getIntent().getStringExtra("KeySolicitud"), Toast.LENGTH_LONG).show();
+            //se obtiene la solicitud actual con la KEY que se obtuvo
             solicitudesReference.addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                     for(DataSnapshot data : dataSnapshot.getChildren()){
-                        if(data.getValue(SolicitudViaje.class).getKey().equals(getIntent().getStringExtra("solicitud_key"))){
+                        if(data.getValue(SolicitudViaje.class).getKey().equals(getIntent().getStringExtra("KeySolicitud"))){
                             solicitudActual = data.getValue(SolicitudViaje.class);
                         }
+                        if(data.getValue(SolicitudViaje.class).getKeyViaje().equals(getIntent().getStringExtra("KeyViaje"))
+                                &&data.getValue(SolicitudViaje.class).isAceptada()){
+                            solicitudes.add(data.getValue(SolicitudViaje.class));
+                        }
                     }
+                    //una vez que se obtiene la llave se procede a obtener el viaje actual
                     viajesReference.addListenerForSingleValueEvent(new ValueEventListener() {
                         @Override
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
@@ -117,86 +128,164 @@ public class ExpandSolicitudViajeActivity extends AppCompatActivity {
                                     viajeActual = data.getValue(Viaje.class);
                                 }
                             }
+                            //una vez que se obtiene se procede a configurar los textviews
                             txtDestino.setText(viajeActual.getDireccionDestino());
                             txtSalida.setText(viajeActual.getDireccionSalida());
                             txtPuntoDeParada.setText(solicitudActual.getDireccionDeParada());
-                            if(solicitudActual.isAceptada()){
+                            if(solicitudActual.isAceptada())
                                 txtEstado.setText("Aceptada");
-                            }else{
+                            else
                                 txtEstado.setText("Pendiente");
-                            }
                             btnRegresar.setOnClickListener(e->{
                                 finish();
                             });
+
                             btnMapa.setOnClickListener(e->{
                                 Intent intent = new Intent(getApplicationContext() ,VisualizeTravelActivity.class);
                                 intent.putExtra("visualizeMapParada", true);
-                                if(getIntent().hasExtra("Edicion"))
-                                    intent.putExtra("editMapParada", true);
+                                intent.putExtra("KeySolicitud", solicitudActual.getKey());
+//            if(!solicitud.isAceptada()){
+//                //si no esta en modo edicion y la solicitud aun no es aceptada entonces se
+//                //deben agregar los puntos manualmente para que puedan ser visualizados
+//                intent.putExtra("direccionSolicitud", solicitud.getDireccionDeParada());
+//                intent.putExtra("latitudSolicitud", solicitud.getPuntoDeParada().getLatitude());
+//                intent.putExtra("longitudSolicitud", solicitud.getPuntoDeParada().getLongitude());
+//            }
                                 intent.putExtra("direccionDestino", viajeActual.getDireccionDestino());
                                 intent.putExtra("direccionSalida", viajeActual.getDireccionSalida());
                                 intent.putExtra("latitudSalida", viajeActual.getPuntosDeViaje().get(0).getLatitude());
                                 intent.putExtra("longitudSalida", viajeActual.getPuntosDeViaje().get(0).getLongitude());
                                 intent.putExtra("latitudDestino", viajeActual.getPuntosDeViaje().get(1).getLatitude());
                                 intent.putExtra("longitudDestino", viajeActual.getPuntosDeViaje().get(1).getLongitude());
-                                String[] puntosArray = new String[viajeActual.getPuntosDeParada().size()];
+                                AtomicInteger var = new AtomicInteger(0);
+                                //si el la solicitud actual aun no se acepta entonces se debe agregar manualmente
+                                //pero debe ser solo para la solicitud actual
+
+                                if(!solicitudActual.isAceptada())
+                                    var.set(1);
+                                String[] puntosArray = new String[viajeActual.getPuntosDeParada().size() + var.get()];
                                 for(int i = 0; i<viajeActual.getPuntosDeParada().size(); i++){
                                     puntosArray[i] = String.valueOf(viajeActual.getPuntosDeParada().get(i).getLatitude())+":"+
                                             String.valueOf(viajeActual.getPuntosDeParada().get(i).getLongitude());
                                 }
+                                if(var.get() == 1)
+                                    puntosArray[viajeActual.getPuntosDeParada().size()] = String.valueOf(solicitudActual.getPuntoDeParada().getLatitude())+":"+
+                                            String.valueOf(solicitudActual.getPuntoDeParada().getLongitude());
                                 intent.putExtra("puntosParada", puntosArray);
-                                solicitudesReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                                List<String> direccionesParada = new LinkedList<>();
+                                for(SolicitudViaje s : solicitudes){
+                                    direccionesParada.add(s.getDireccionDeParada());
+                                }
+                                String[] direccionesParadaArray = new String[direccionesParada.size() + var.get()];
+                                for(int i = 0; i < direccionesParada.size(); i++){
+                                    direccionesParadaArray[i] = direccionesParada.get(i);
+                                }
+                                if(var.get() == 1)
+                                    direccionesParadaArray[direccionesParada.size()] = solicitudActual.getDireccionDeParada();
+                                intent.putExtra("direccionesPuntosParada", direccionesParadaArray);
+                                usuariosReference.addListenerForSingleValueEvent(new ValueEventListener() {
                                     @Override
                                     public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                        List<String> direccionesParada = new LinkedList<>();
-                                        for(DataSnapshot data : dataSnapshot.getChildren()){
-                                            if(data.getValue(SolicitudViaje.class).getKeyViaje().equals(viajeActual.getKey())){
-                                                direccionesParada.add(data.getValue(SolicitudViaje.class).getDireccionDeParada());
+                                        List<User> usuarios = new LinkedList<>();
+                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+                                            if (data.getValue(User.class).getKey().equals(solicitudActual.getKeyPasajero())||
+                                                    viajeActual.getKeysPasajeros().contains(data.getValue(User.class).getKey())) {
+                                                //si el usuario esta en la lista de pasajeros entonces se agrega
+                                                usuarios.add(data.getValue(User.class));
                                             }
                                         }
-                                        String[] direccionesParadaArray = new String[direccionesParada.size()];
-                                        for(int i = 0; i < direccionesParada.size(); i++){
-                                            direccionesParadaArray[i] = direccionesParada.get(i);
-                                        }
-                                        intent.putExtra("direccionesPuntosParada", direccionesParadaArray);
-                                        usuariosReference.addListenerForSingleValueEvent(new ValueEventListener() {
-                                            @Override
-                                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
-                                                List<String> nombres = new LinkedList<>();
-                                                for(DataSnapshot data : dataSnapshot.getChildren()){
-                                                    for(String keyUser : viajeActual.getKeysPasajeros()){
-                                                        if(data.getValue(User.class).getKey().equals(keyUser)){
-                                                            nombres.add(data.getValue(User.class).getNombre());
-                                                        }
-                                                        if(data.getValue(User.class).getKey().equals(pref.getString("key", null))){
-                                                            intent.putExtra("currentUserKey", data.getValue(User.class).getKey());
-                                                            intent.putExtra("currentUserName", data.getValue(User.class).getNombre());
-                                                        }
-                                                    }
+                                        List<String> nombres = new LinkedList<>();
+                                        for(String keyUser : viajeActual.getKeysPasajeros()){
+                                            for(User user : usuarios) {
+                                                if(user.getKey().equals(keyUser)) {
+                                                    nombres.add(user.getNombre());
                                                 }
-                                                String[] nombresArray = new String[nombres.size()];
-                                                for(int i = 0; i<nombres.size(); i++){
-                                                    nombresArray[i] = nombres.get(i);
+                                                if(user.getKey().equals(pref.getString("key", null))){
+                                                    intent.putExtra("currentUserKey", user.getKey());
+                                                    intent.putExtra("currentUserName", user.getNombre());
                                                 }
-                                                intent.putExtra("usersParadas", nombresArray);
-                                                if(getIntent().hasExtra("Edicion"))
-                                                    startActivityForResult(intent, MODIFY_WAYPOINT);
-                                                else
-                                                    startActivity(intent);
+                                                if(user.getKey().equals(solicitudActual.getKeyPasajero())){
+                                                    intent.putExtra("currentSolicitudUserKey", user.getKey());
+                                                    intent.putExtra("currentSolicitudUserName", user.getNombre());
+                                                }
                                             }
-                                            @Override
-                                            public void onCancelled(@NonNull DatabaseError databaseError) { }
-                                        });
+                                        }
+                                        if(var.get() == 1){
+                                            for(User u : usuarios){
+                                                if(u.getKey().equals(solicitudActual.getKeyPasajero())){
+                                                    nombres.add(u.getNombre());
+                                                    intent.putExtra("currentSolicitudUserKey", u.getKey());
+                                                    intent.putExtra("currentSolicitudUserName", u.getNombre());
+                                                }
+                                            }
+                                        }
+                                        String[] nombresArray = new String[nombres.size()];
+                                        for(int i = 0; i<nombres.size(); i++){
+                                            nombresArray[i] = nombres.get(i);
+                                        }
+                                        intent.putExtra("usersParadas", nombresArray);
+                                        if (getIntent().hasExtra("Edicion")) {
+                                            intent.putExtra("editMapParada", true);
+                                            startActivityForResult(intent, MODIFY_WAYPOINT);
+                                        } else {
+                                            startActivity(intent);
+                                        }
                                     }
                                     @Override
                                     public void onCancelled(@NonNull DatabaseError databaseError) { }
                                 });
+//                                Intent intent = new Intent(getApplicationContext() ,VisualizeTravelActivity.class);
+//                                //si el mapa es solo para visualizar entonces
+//                                intent.putExtra("visualizeMapParada", true);
+//                                //si se quiere mandar toda la solicitud entonces
+//                                intent.putExtra("KeySolicitud", solicitudActual.getKey());
+//
+//                                //se manda la informacion basica del viaje que en los dos casos es necesaria
+//                                intent.putExtra("direccionDestino", viajeActual.getDireccionDestino());
+//                                intent.putExtra("direccionSalida", viajeActual.getDireccionSalida());
+//                                intent.putExtra("latitudSalida", viajeActual.getPuntosDeViaje().get(0).getLatitude());
+//                                intent.putExtra("longitudSalida", viajeActual.getPuntosDeViaje().get(0).getLongitude());
+//                                intent.putExtra("latitudDestino", viajeActual.getPuntosDeViaje().get(1).getLatitude());
+//                                intent.putExtra("longitudDestino", viajeActual.getPuntosDeViaje().get(1).getLongitude());
+//                                String[] puntosArray = new String[1];
+//                                //se convierte a un array los puntos de parada que ya tiene el viaje
+//                                puntosArray[0] = String.valueOf(solicitudActual.getPuntoDeParada().getLatitude())+":"+
+//                                            String.valueOf(solicitudActual.getPuntoDeParada().getLongitude());
+//                                intent.putExtra("puntosParada", puntosArray);
+//
+//                                //despues se busca si
+//                                String[] direccionesParadaArray = new String[1];
+//                                direccionesParadaArray[0] = solicitudActual.getDireccionDeParada();
+//                                intent.putExtra("direccionesPuntosParada", direccionesParadaArray);
+//                                //despues se busca a todos los usuarios que han solicitado el viaje actual
+//                                usuariosReference.addListenerForSingleValueEvent(new ValueEventListener() {
+//                                    @Override
+//                                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+//                                        String[] nombresArray = new String[1];
+//                                        for (DataSnapshot data : dataSnapshot.getChildren()) {
+//                                            if (data.getValue(User.class).getKey().equals(solicitudActual.getKeyPasajero())) {
+//                                                //si el usuario esta en la lista de pasajeros entonces se agrega
+//                                                nombresArray[0] = data.getValue(User.class).getNombre();
+//                                            }
+//                                            intent.putExtra("usersParadas", nombresArray);
+//                                            if (getIntent().hasExtra("Edicion")) {
+//                                                intent.putExtra("editMapParada", true);
+//                                                startActivityForResult(intent, MODIFY_WAYPOINT);
+//                                            } else {
+//                                                startActivity(intent);
+//                                            }
+//                                        }
+//                                    }
+//                                    @Override
+//                                    public void onCancelled(@NonNull DatabaseError databaseError) { }
+//                                });
                             });
                             if(getIntent().hasExtra("Edicion")){
                                 txtEspacios.setVisibility(View.GONE);
                                 editEspacios.setText(String.valueOf(solicitudActual.getEspaciosSolicitados()));
                                 btnConfirmar.setOnClickListener(e->{
                                     if(isModified){
+                                        //solo entra aqui si la direccion de la parada ha sido modificada
                                         YesOrNoChooserDialog dlg = new YesOrNoChooserDialog(ExpandSolicitudViajeActivity.this, "ModificarSolicitud",
                                                 "Modificar Solicitud De Viaje", "Seguro que quieres modificar la solicitud?, sera enviada al conductor" +
                                                 " de nuevo para ser revisada de nuevo.", listener);

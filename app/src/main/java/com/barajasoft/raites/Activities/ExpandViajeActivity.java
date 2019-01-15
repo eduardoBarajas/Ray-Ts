@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
@@ -26,6 +27,7 @@ import android.widget.Toast;
 import com.barajasoft.raites.Adapters.OtrosPasajerosAdapter;
 import com.barajasoft.raites.Dialogs.AlertDialog;
 import com.barajasoft.raites.Dialogs.YesOrNoChooserDialog;
+import com.barajasoft.raites.Entities.SolicitudViaje;
 import com.barajasoft.raites.Entities.User;
 import com.barajasoft.raites.Entities.Vehiculo;
 import com.barajasoft.raites.Entities.Viaje;
@@ -36,6 +38,8 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.mapbox.geojson.Point;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mikhaellopez.circularimageview.CircularImageView;
 import com.nostra13.universalimageloader.core.DisplayImageOptions;
@@ -43,12 +47,16 @@ import com.nostra13.universalimageloader.core.ImageLoader;
 import com.nostra13.universalimageloader.core.ImageLoaderConfiguration;
 import com.nostra13.universalimageloader.core.assist.ImageScaleType;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
 public class ExpandViajeActivity extends AppCompatActivity {
     private SharedPreferences pref;
+    private final int MODIFY_WAYPOINT = 142;
     private SharedPreferences.Editor editor;
     private final FirebaseDatabase database = FirebaseDatabase.getInstance();
     private DatabaseReference usuariosReference = database.getReference("Usuarios");
@@ -67,7 +75,8 @@ public class ExpandViajeActivity extends AppCompatActivity {
     private TextView labelCambios;
     private final String changedLabel = "Se realizaron cambios relacionados con el viaje, por favor espera a que el conductor lo corrija";
     private ResultListener listener;
-    private String viajeStatus = "", solicitudViajeKey = "";
+    private String viajeStatus = "";
+    private SolicitudViaje solicitudActual;
     private Viaje currentViaje;
     private boolean viewAvaible = false;
     @Override
@@ -283,9 +292,13 @@ public class ExpandViajeActivity extends AppCompatActivity {
         toolbar.setSubtitle("Detalles del viaje");
 
         //new loadViajeDataFromServer(this).execute();
-        if(getIntent().hasExtra("KeySolicitud"))
-            solicitudViajeKey = getIntent().getStringExtra("KeySolicitud");
-
+        if(getIntent().hasExtra("KeySolicitud")) {
+            solicitudActual = new SolicitudViaje();
+            solicitudActual.setKey(getIntent().getStringExtra("KeySolicitud"));
+        }
+//            solicitudActual.setDireccionDeParada(getIntent().getStringExtra("direccionSolicitud"));
+//            solicitudActual.setPuntoDeParada(new LatLng(getIntent().getDoubleExtra("latitudSolicitud", 0),
+//                    getIntent().getDoubleExtra("longitudSolicitud", 0)));
         if(getIntent().hasExtra("KeyConductor")){
             Intent data = getIntent();
             currentViaje = new Viaje();
@@ -295,7 +308,21 @@ public class ExpandViajeActivity extends AppCompatActivity {
             currentViaje.setDireccionSalida(data.getStringExtra("Salida"));
             currentViaje.setFechaViaje(data.getStringExtra("FechaSalida"));
             currentViaje.setHoraViaje(data.getStringExtra("HoraSalida"));
+            currentViaje.getPuntosDeViaje().add(new LatLng(data.getDoubleExtra("latitudSalida", 0),
+                    data.getDoubleExtra("longitudSalida", 0)));
+            currentViaje.getPuntosDeViaje().add(new LatLng(data.getDoubleExtra("latitudDestino", 0),
+                    data.getDoubleExtra("longitudDestino", 0)));
             currentViaje.setEspaciosDisponibles(data.getIntExtra("EspaciosDisponibles", 0));
+            viajesReference.child(currentViaje.getKey()).child("puntosDeParada").addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                    for(DataSnapshot d : dataSnapshot.getChildren()){
+                        currentViaje.getPuntosDeParada().add(d.getValue(LatLng.class));
+                    }
+                }
+                @Override
+                public void onCancelled(@NonNull DatabaseError databaseError) { }
+            });
             for(String key : data.getStringArrayExtra("PasajerosKeys"))
                 currentViaje.getKeysPasajeros().add(key);
         }
@@ -353,8 +380,77 @@ public class ExpandViajeActivity extends AppCompatActivity {
         txtAsientos.setText(String.valueOf(currentViaje.getEspaciosDisponibles()));
         btnParada.setOnClickListener(e->{
             if(!txtAsientosSolicitados.getText().toString().isEmpty()){
-                editor.putInt("AsientosSolicitados", Integer.parseInt(txtAsientosSolicitados.getText().toString()));
-                editor.commit();
+                //se llama edit map
+                Intent intent = new Intent(getApplicationContext() ,VisualizeTravelActivity.class);
+                intent.putExtra("visualizeMapParada", true);
+                intent.putExtra("editMapParada", true);
+                intent.putExtra("direccionDestino", currentViaje.getDireccionDestino());
+                intent.putExtra("direccionSalida", currentViaje.getDireccionSalida());
+                intent.putExtra("latitudSalida", currentViaje.getPuntosDeViaje().get(0).getLatitude());
+                intent.putExtra("longitudSalida", currentViaje.getPuntosDeViaje().get(0).getLongitude());
+                intent.putExtra("latitudDestino", currentViaje.getPuntosDeViaje().get(1).getLatitude());
+                intent.putExtra("longitudDestino", currentViaje.getPuntosDeViaje().get(1).getLongitude());
+
+                if(currentViaje.getPuntosDeParada()!=null){
+                    String[] puntosArray = new String[currentViaje.getPuntosDeParada().size()];
+                    for(int i = 0; i<currentViaje.getPuntosDeParada().size(); i++){
+                        puntosArray[i] = String.valueOf(currentViaje.getPuntosDeParada().get(i).getLatitude())+":"+
+                                String.valueOf(currentViaje.getPuntosDeParada().get(i).getLongitude());
+                    }
+                    for(String s : puntosArray){
+                        Log.e("Puntos Array", s);
+                    }
+                    intent.putExtra("puntosParada", puntosArray);
+                }
+                solicitudesReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                    @Override
+                    public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                        List<String> direccionesParada = new LinkedList<>();
+                        for(DataSnapshot data : dataSnapshot.getChildren()){
+                            if(data.getValue(SolicitudViaje.class).getKeyViaje().equals(currentViaje.getKey())){
+                                direccionesParada.add(data.getValue(SolicitudViaje.class).getDireccionDeParada());
+                            }
+                        }
+                        String[] direccionesParadaArray = new String[direccionesParada.size()];
+                        for(int i = 0; i < direccionesParada.size(); i++){
+                            direccionesParadaArray[i] = direccionesParada.get(i);
+                        }
+                        for(String s : direccionesParadaArray){
+                            Log.e("Direccion Array", s);
+                        }
+                        intent.putExtra("direccionesPuntosParada", direccionesParadaArray);
+                        usuariosReference.addListenerForSingleValueEvent(new ValueEventListener() {
+                            @Override
+                            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                                List<String> nombres = new LinkedList<>();
+                                for(DataSnapshot data : dataSnapshot.getChildren()){
+                                    for(String keyUser : currentViaje.getKeysPasajeros()){
+                                        if(data.getValue(User.class).getKey().equals(keyUser)){
+                                            nombres.add(data.getValue(User.class).getNombre());
+                                        }
+                                        if(data.getValue(User.class).getKey().equals(pref.getString("key", null))){
+                                            intent.putExtra("currentUserKey", data.getValue(User.class).getKey());
+                                            intent.putExtra("currentUserName", data.getValue(User.class).getNombre());
+                                        }
+                                    }
+                                }
+                                String[] nombresArray = new String[nombres.size()];
+                                for(int i = 0; i<nombres.size(); i++){
+                                    nombresArray[i] = nombres.get(i);
+                                }
+                                for(String s : nombresArray){
+                                    Log.e("Nombres Array", s);
+                                }
+                                intent.putExtra("usersParadas", nombresArray);
+                                startActivityForResult(intent, MODIFY_WAYPOINT);
+                            }
+                            @Override
+                            public void onCancelled(@NonNull DatabaseError databaseError) { }
+                        });
+                    }
+                    @Override
+                    public void onCancelled(@NonNull DatabaseError databaseError) { }
+                });
             }else{
                 Toast.makeText(getApplicationContext(), "Primero debes seleccionar el numero de asientos que necesitas", Toast.LENGTH_LONG).show();
             }
@@ -376,7 +472,7 @@ public class ExpandViajeActivity extends AppCompatActivity {
         btnEditarSolicitud.setOnClickListener(e->{
             Intent intent = new Intent(getApplicationContext(), ExpandSolicitudViajeActivity.class);
             intent.putExtra("Edicion", "true");
-            intent.putExtra("solicitud_key", solicitudViajeKey);
+            intent.putExtra("KeySolicitud", solicitudActual.getKey());
             startActivity(intent);
         });
         btnCancelar.setOnClickListener(e->{
@@ -384,6 +480,7 @@ public class ExpandViajeActivity extends AppCompatActivity {
                     "Estas seguro que quieres cancelar la solicitud?", listener);
             dlg.show();
         });
+
         updateUIControls();
     }
 
@@ -391,7 +488,7 @@ public class ExpandViajeActivity extends AppCompatActivity {
         if(viajeStatus.equals(changedLabel)){
             //checa si se ha cambiado algo en la informacion del viaje
             labelCambios.setVisibility(View.VISIBLE);
-            setAssignedControls(false);
+            setAssignedControls(false, false);
             setUnassignedControls(false);
             Log.e("Entro x1", "Segun entro por que hubo cambios");
         }else{
@@ -399,7 +496,7 @@ public class ExpandViajeActivity extends AppCompatActivity {
             if(currentViaje.getKeyConductor().equals(pref.getString("key", null))){
                 //si soy el conductor entonces no deben salir los botones de agendar
                 labelCambios.setVisibility(View.GONE);
-                setAssignedControls(true);
+                setAssignedControls(true, true);
                 setUnassignedControls(false);
                 Log.e("Entro x1", "Segun entro por que Era el conductor");
             } else{
@@ -408,14 +505,14 @@ public class ExpandViajeActivity extends AppCompatActivity {
                     if(keys.equals(pref.getString("key", null))){
                         Log.e("Entro x1", "Segun entro por que era pasajero");
                         labelCambios.setVisibility(View.GONE);
-                        setAssignedControls(true);
+                        setAssignedControls(true, false);
                         setUnassignedControls(false);
                         isAssigned = true;
                     }
                 }
                 if(!isAssigned){
                     labelCambios.setVisibility(View.GONE);
-                    setAssignedControls(false);
+                    setAssignedControls(false, false);
                     setUnassignedControls(true);
                     Log.e("Entro x1", "Segun entro por que no es ni pasajero, ni conductor ni hubo cambios");
                 }
@@ -423,11 +520,17 @@ public class ExpandViajeActivity extends AppCompatActivity {
         }
     }
 
-    private void setAssignedControls(boolean active){
+    private void setAssignedControls(boolean active, boolean isConductor){
         if(active){
+            if(isConductor){
+                btnEditarSolicitud.setVisibility(View.GONE);
+                lblAssigned.setText("Cambio de planes? Puedes cancelar el viaje y publicar uno nuevo.");
+            }else{
+                btnEditarSolicitud.setVisibility(View.VISIBLE);
+                lblAssigned.setText("Cambio de planes? actualiza o cancela la solicitud para este viaje antes de que parta");
+            }
             lblAssigned.setVisibility(View.VISIBLE);
             btnCancelar.setVisibility(View.VISIBLE);
-            btnEditarSolicitud.setVisibility(View.VISIBLE);
         }else {
             lblAssigned.setVisibility(View.GONE);
             btnCancelar.setVisibility(View.GONE);
@@ -461,5 +564,30 @@ public class ExpandViajeActivity extends AppCompatActivity {
     public void onDestroy() {
         super.onDestroy();
         viewAvaible = false;
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if(requestCode == MODIFY_WAYPOINT && resultCode == RESULT_OK) {
+            SolicitudViaje solicitudViaje = new SolicitudViaje();
+            solicitudViaje.setAceptada(false);
+            solicitudViaje.setEspaciosSolicitados(Integer.parseInt(txtAsientosSolicitados.getText().toString()));
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
+            solicitudViaje.setFechaSolicitud(simpleDateFormat.format(Calendar.getInstance().getTime()));
+            solicitudViaje.setKeyPasajero(pref.getString("key", null));
+            solicitudViaje.setPuntoDeParada(new LatLng(data.getDoubleExtra("latitudParada", 0), data.getDoubleExtra("longitudParada", 0)));
+            solicitudViaje.setKeyViaje(currentViaje.getKey());
+            solicitudViaje.setDireccionDeParada(data.getStringExtra("direccionParada"));
+            solicitudesReference.child(solicitudViaje.getKey()).setValue(solicitudViaje, new DatabaseReference.CompletionListener() {
+                @Override
+                public void onComplete(@Nullable DatabaseError databaseError, @NonNull DatabaseReference databaseReference) {
+                    Toast.makeText(getApplicationContext(), "Se envio la solicitud", Toast.LENGTH_LONG).show();
+                    finish();
+                }
+            });
+        }else {
+            Snackbar.make(getCurrentFocus(), "Se cancelo la seleccion de direccion", Toast.LENGTH_SHORT).show();
+        }
     }
 }

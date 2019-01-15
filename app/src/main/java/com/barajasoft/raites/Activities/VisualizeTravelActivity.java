@@ -2,6 +2,7 @@ package com.barajasoft.raites.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.constraint.ConstraintLayout;
 import android.support.constraint.ConstraintSet;
@@ -10,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.barajasoft.raites.Listeners.ResultListener;
 import com.barajasoft.raites.R;
@@ -96,6 +98,7 @@ public class VisualizeTravelActivity extends BaseActivity implements OnMapReadyC
         btnConfirmar = layout.findViewById(R.id.confirmarButton);
         mapView = (MapView) layout.findViewById(R.id.mapView);
 
+        //todos entran a esta parte es la que muestra el inicio y final del viaje
         if(getIntent().hasExtra("direccionSalida")){
             txtSalida.setText(getIntent().getStringExtra("direccionSalida"));
             txtDestino.setText(getIntent().getStringExtra("direccionDestino"));
@@ -104,19 +107,66 @@ public class VisualizeTravelActivity extends BaseActivity implements OnMapReadyC
         }
         ConstraintSet constraintSet = new ConstraintSet();
         constraintSet.clone(constraintLayout);
+        //si el mapa tiene la siguiente variable activada entonces solo se podra visualizar el mapa no editarlo
         if(getIntent().hasExtra("visualizeMapParada")) {
             //aqui el text de parada esta visible por eso se usa ese constraint
             constraintSet.connect(mapView.getId(), ConstraintSet.TOP, txtParada.getId(), ConstraintSet.BOTTOM,8);
+
+            //se obtiene la informacion de los diferentes puntos que ya tiene el viaje
             for (int i = 0; i < getIntent().getStringArrayExtra("usersParadas").length; i++) {
                 direccionesParadas.add(getIntent().getStringArrayExtra("direccionesPuntosParada")[i]);
                 nombresParadas.add(getIntent().getStringArrayExtra("usersParadas")[i]);
                 posicionesParadas.add(new LatLng(Double.parseDouble(getIntent().getStringArrayExtra("puntosParada")[i].split(":")[0]),
                         Double.parseDouble(getIntent().getStringArrayExtra("puntosParada")[i].split(":")[1])));
             }
+
+            if(getIntent().hasExtra("currentSolicitudUserName")){
+                currentUserKey = getIntent().getStringExtra("currentSolicitudUserKey");
+                currentUserName = getIntent().getStringExtra("currentSolicitudUserName");
+                if(nombresParadas.contains(currentUserName))
+                    txtParada.setText(direccionesParadas.get(nombresParadas.indexOf(currentUserName)));
+            }
+
+            //va a entrar a la proxima condicion cuando se entre como pasajero
             if(getIntent().hasExtra("currentUserName")){
                 currentUserKey = getIntent().getStringExtra("currentUserKey");
                 currentUserName = getIntent().getStringExtra("currentUserName");
-                txtParada.setText(direccionesParadas.get(nombresParadas.indexOf(currentUserName)));
+                for(String d : direccionesParadas){
+                    Log.e("Direccion", d);
+                }
+                for(String n : nombresParadas){
+                    Log.e("Nombre", n);
+                }
+                Log.e("Nombre actual", currentUserName);
+                if(nombresParadas.contains(currentUserName)){
+                    txtParada.setText(direccionesParadas.get(nombresParadas.indexOf(currentUserName)));
+                }else{
+                    nombresParadas.add(currentUserName);
+                    txtParada.setText("Selecciona un punto en el mapa");
+                }
+            }
+
+//            //va a entrar a la proxima condicion cuando se entre por las solicitudes cuando se es conductor
+//            if(getIntent().hasExtra("currentSolicitudUserKey")){
+//                currentUserKey = getIntent().getStringExtra("currentSolicitudUserKey");
+//                currentUserName = getIntent().getStringExtra("currentSolicitudUserName");
+//                for(String d : direccionesParadas){
+//                    Log.e("Direccion", d);
+//                }
+//                for(String n : nombresParadas){
+//                    Log.e("Nombre", n);
+//                }
+//                Log.e("Nombre actual", currentUserName);
+//                txtParada.setText(direccionesParadas.get(nombresParadas.indexOf(currentUserName)));
+//            }
+
+            //si se entra a esta actividad para ver una solicitud y aun no se acepta entonces se debe agregar manualmente
+            if(getIntent().hasExtra("direccionSolicitud")){
+                nombresParadas.add(PreferenceManager.getDefaultSharedPreferences(getApplicationContext()).getString("nombre", null));
+                direccionesParadas.add(getIntent().getStringExtra("direccionSolicitud"));
+                posicionesParadas.add(new LatLng(getIntent().getDoubleExtra("latitudSolicitud", 0),
+                        getIntent().getDoubleExtra("longitudSolicitud", 0)));
+                txtParada.setText(direccionesParadas.get(direccionesParadas.size() - 1));
             }
         }else{
             labelParada.setVisibility(View.GONE);
@@ -124,9 +174,8 @@ public class VisualizeTravelActivity extends BaseActivity implements OnMapReadyC
             //aqui no esta visible por eso se usa el otro constraint de destino
             constraintSet.connect(mapView.getId(), ConstraintSet.TOP, txtDestino.getId(), ConstraintSet.BOTTOM,8);
         }
-        if(getIntent().hasExtra("editMapParada")){
+        if(getIntent().hasExtra("editMapParada"))
             isEditing = true;
-        }
         constraintSet.applyTo(constraintLayout);
 
         mapView.onCreate(savedInstanceState);
@@ -148,12 +197,13 @@ public class VisualizeTravelActivity extends BaseActivity implements OnMapReadyC
                     puntoDeParadaMarker = mapboxMap.addMarker(new MarkerOptions().position(new LatLng(currentPuntoParada.latitude(), currentPuntoParada.longitude()))
                             .title("Nueva Parada Seleccionada").snippet(currentDireccion));
                     List<Point> paradasPoints = new LinkedList<>();
-                    for(LatLng pos : posicionesParadas){
+                    for(LatLng pos : posicionesParadas)
                         paradasPoints.add(Point.fromLngLat(pos.getLongitude(), pos.getLatitude()));
-                    }
-                    paradasPoints.set(nombresParadas.indexOf(currentUserName), currentPuntoParada);
+                    paradasPoints.add(currentPuntoParada);
                     mapUtilities.getRutaConParada(navigationMapRoute, inicio, destino, paradasPoints);
                     btnConfirmar.setVisibility(View.VISIBLE);
+                    for(Point point : paradasPoints)
+                        Log.e("Paradas", String.valueOf(point.latitude()) +", "+ String.valueOf(point.longitude()));
                 }
             }
         };
@@ -184,7 +234,10 @@ public class VisualizeTravelActivity extends BaseActivity implements OnMapReadyC
         for(LatLng pos : posicionesParadas){
             paradasPoints.add(Point.fromLngLat(pos.getLongitude(), pos.getLatitude()));
         }
-        mapUtilities.getRutaConParada(navigationMapRoute, inicio, destino, paradasPoints);
+        if(paradasPoints.size()>0)
+            mapUtilities.getRutaConParada(navigationMapRoute, inicio, destino, paradasPoints);
+        else
+            mapUtilities.getRuta(navigationMapRoute, inicio, destino);
         mapboxMap.setCameraPosition(mapUtilities.moverCamara(new LatLng(inicio.latitude(),inicio.longitude())));
         if(isEditing){
             mapboxMap.addOnMapClickListener(new MapboxMap.OnMapClickListener() {
